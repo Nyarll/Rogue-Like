@@ -5,6 +5,23 @@
 class Map;
 class Player;
 
+typedef enum 
+{
+	Wait, // キー入力待ち。もしくは待機中
+
+	// アクション
+	ActBegin, // 開始
+	Act,      // 実行中
+	ActEnd,   // 終了
+
+	// 移動
+	MoveBegin, // 開始
+	Move,      // 移動中
+	MoveEnd,   // 完了
+
+	TurnEnd,   // ターン終了
+}Action;
+
 class ScenePlay : public Scene
 {
 public:
@@ -21,6 +38,8 @@ private:
 	Map* map;
 	Player* player;
 
+	Action act;
+
 	bool render_map;
 	bool render_msg;
 
@@ -31,6 +50,9 @@ private:
 	int render_cnt = 255;
 	float change_cnt;
 	bool change_flag = false;
+
+	bool action_flag = false;
+	bool action_flag_old = false;
 
 public:
 	void InitDungeons();

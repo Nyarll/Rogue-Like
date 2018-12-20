@@ -17,7 +17,7 @@ void MessageWindow::SetMessage(int msgColor, std::string fmt_str, ...)
 	int final_n, n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
 	std::unique_ptr<char[]> formatted;
 	va_list ap;
-	while (1) 
+	while (1)
 	{
 		formatted.reset(new char[n]); /* Wrap the plain char array into the unique_ptr */
 		strcpy(&formatted[0], fmt_str.c_str());
@@ -32,15 +32,15 @@ void MessageWindow::SetMessage(int msgColor, std::string fmt_str, ...)
 	std::string result = std::string(formatted.get());
 
 	Message me;
-	me.m = result;
-	me.x = this->start_x;
-	me.y = this->end_y - 20;
+	me.SetMessage(result);
+	me.SetPointX(this->start_x);
+	me.SetPointY(this->end_y - 20);
 	me.SetFont(this->font);
-	me.color = msgColor;
+	me.SetColor(msgColor);
 
 	for (int i = 0; i < this->message.size(); i++)
 	{
-		this->message[i].y -= 20;
+		this->message[i].SetPointY(this->message[i].GetPointY() - 20);
 	}
 
 	this->message.push_back(me);
@@ -50,12 +50,17 @@ void MessageWindow::Render()
 {
 	for (int i = 0; i < this->message.size(); i++)
 	{
-		int y = message[i].y;
+		int y = message[i].GetPointY();
 		if (y >= MessageWindow::RenderMax)
 		{
 			this->message[i].Render();
 		}
 		else
+		{
+			this->message.erase(this->message.begin() + i);
+		}
+
+		if (this->message[i].GetAlive() == false)
 		{
 			this->message.erase(this->message.begin() + i);
 		}

@@ -44,4 +44,6 @@ public:
 	bool IsFloorChange(int grid_x, int grid_y)const;	// ˆÚ“®æ‚ªƒtƒƒAˆÚ“®‚Å‚«‚é‚â‚Â‚©‚Ç‚¤‚©
 
 	void SetMagicCircle(int grid_x, int grid_y);
+
+	void SetFloorDefault(int grid_x, int grid_y);		// °‚É–ß‚·
 };

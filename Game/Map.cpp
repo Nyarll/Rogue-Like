@@ -202,3 +202,9 @@ void Map::SetMagicCircle(int grid_x, int grid_y)
 	this->map_data[grid_x][grid_y].mapData = 3;
 	this->cells[grid_y][grid_x] = 3;
 }
+
+void Map::SetFloorDefault(int grid_x, int grid_y)
+{
+	this->map_data[grid_x][grid_y].mapData = 0;
+	this->cells[grid_y][grid_x] = 0;
+}

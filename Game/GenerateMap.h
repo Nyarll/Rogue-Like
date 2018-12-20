@@ -4,7 +4,7 @@
 const int MapSizeX = 64;
 const int MapSizeY = 64;
 
-const int NumObject = 10;
+const int NumObject = 40;
 const int NumMobs = 40;
 
 enum

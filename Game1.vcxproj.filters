@@ -94,6 +94,9 @@
     <ClCompile Include="Game\MessageWindow.cpp">
       <Filter>ゲーム</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Enemy.cpp">
+      <Filter>ゲーム</Filter>
+    </ClCompile>
   </ItemGroup>
   <!-- ヘッダファイル -->
   <ItemGroup>
@@ -167,6 +170,12 @@
       <Filter>ゲーム</Filter>
     </ClInclude>
     <ClInclude Include="Game\MessageWindow.h">
+      <Filter>ゲーム</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Enemy.h">
+      <Filter>ゲーム</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Actor.h">
       <Filter>ゲーム</Filter>
     </ClInclude>
   </ItemGroup>

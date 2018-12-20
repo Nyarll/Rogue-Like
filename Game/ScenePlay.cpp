@@ -18,6 +18,7 @@ ScenePlay::ScenePlay()
 	this->render_msg = true;
 	this->dng_floor = 1;
 
+	this->act = Wait;
 
 	this->map = new Map;
 	this->map->LoadMapChip("Resources/Textures/debug_mapchip.png");
@@ -36,15 +37,10 @@ ScenePlay::ScenePlay()
 	}
 
 	this->player = new Player;
-	Vector2 init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(0).x),
-		static_cast<float>(this->map->map_->GetInitMobPosition(0).y) };
-	this->player->ChangeMap(map, init_pos.x, init_pos.y);
 
-	init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).x),
-		static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).y) };
-	this->map->SetFloorChangePlace(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y));
+	this->InitDungeons();
 
-	this->msg_font = CreateFontToHandle("Algerian", 32, -1);
+	this->msg_font = CreateFontToHandle("HGSënâpÃﬂ⁄æﬁ›ΩEB", 32, -1);
 	this->change_cnt = 0;
 
 	this->player->SetName("Kame");
@@ -118,25 +114,28 @@ void ScenePlay::InitDungeons()
 	this->map->SetFloorChangePlace(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y));
 
 	// ñÇñ@êwÇê›íu
-	init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 2).x) - 1,
-		static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 2).y) - 1 };
-	if (!(this->map->IsPassable(static_cast<int>(init_pos.x - 1), static_cast<int>(init_pos.y))) &&
-		!(this->map->IsPassable(static_cast<int>(init_pos.x + 1), static_cast<int>(init_pos.y))) &&
-		!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y - 1))) &&
-		!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y + 1))))
+	for (int i = 1; i < NumObject - 2; i++)
 	{
-		while (1)
+		init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x) - 1,
+			static_cast<float>(this->map->map_->GetInitMobPosition(i).y) - 1 };
+		if (!(this->map->IsPassable(static_cast<int>(init_pos.x - 1), static_cast<int>(init_pos.y))) &&
+			!(this->map->IsPassable(static_cast<int>(init_pos.x + 1), static_cast<int>(init_pos.y))) &&
+			!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y - 1))) &&
+			!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y + 1))))
 		{
-			this->map->map_->MobInstallTo(NumObject - 2);
-			init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 2).x),
-				static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 2).y) };
-			if ((this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y))))
+			while (1)
 			{
-				break;
+				this->map->map_->MobInstallTo(i);
+				init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x),
+					static_cast<float>(this->map->map_->GetInitMobPosition(i).y) };
+				if ((this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y))))
+				{
+					break;
+				}
 			}
 		}
+		this->map->SetMagicCircle(init_pos.x, init_pos.y);
 	}
-	this->map->SetMagicCircle(init_pos.x, init_pos.y);
 }
 
 bool ScenePlay::ChangeMap()
@@ -167,22 +166,61 @@ void ScenePlay::Update(void)
 {
 	InputManager& input = InputManager::singleton();
 	input.Update();
+	MessageWindow& me = MessageWindow::singleton();
 
+	if (!this->change_flag)
+	{
+		this->action_flag = this->player->Update();
+	}
+	else
+	{
+		if (this->ChangeMap())
+		{
+			this->change_flag = false;
+		}
+	}
 	//if (input.key->GetInput())
 	{
 		if (this->player->GetMoveCount() == 0)
 		{
 			Vector2 p_pos = this->player->GetPosition();
-			if (this->map->GetCellid(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y)) == 2)
+			if (this->map->GetCellid(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y)) == 2
+				&& (this->action_flag && this->action_flag_old))
 			{
 				this->change_flag = true;
+				me.SetMessage(COLOR_WHITE, "â∫ÇÃäKëwÇ÷...");
 			}
-			if (this->map->GetCellid(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y)) == 3)
+			if (this->map->GetCellid(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y)) == 3
+				&& (this->action_flag && this->action_flag_old))
 			{
-				MessageWindow& me = MessageWindow::singleton();
-				me.SetMessage(COLOR_RED, "%s ÇÕ ñÇñ@êwÇì•ÇÒÇ≈ÇµÇ‹Ç¡ÇΩ", this->player->GetName());
+				int info_color = 0xffff8800;
+				me.SetMessage(COLOR_WHITE, " %s ÇÕ ñÇñ@êwÇì•ÇÒÇæ", this->player->GetName());
+
+				if (rand() % 2)
+				{
+					
+					me.SetMessage(info_color, "ñÇñ@êwÇÃå¯â Ç™î≠ìÆÅI");
+					switch (rand() % 2)
+					{
+					case 0:
+						me.SetMessage(info_color, "ñÇñ@êwÇÕÉ_ÉÅÅ[ÉWÉgÉâÉbÉvÇæÇ¡ÇΩ");
+						this->player->Damage(rand() % 10 + 1);
+						break;
+
+					case 1:
+						me.SetMessage(info_color, "ñÇñ@êwÇÕâÒïúñÇñ@êwÇæÇ¡ÇΩ");
+						this->player->Recovery(rand() % 30 + 2);
+						break;
+					}
+				}
+				else
+				{
+					me.SetMessage(info_color, "âΩÇ‡ãNÇ±ÇÁÇ»Ç©Ç¡ÇΩ");
+				}
+				this->map->SetFloorDefault(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y));
+
 			}
-			if (input.key->GetDown(KEY_INPUT_Z))
+			if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
 			{
 				player->Attack();
 			}
@@ -191,6 +229,7 @@ void ScenePlay::Update(void)
 	{
 		if (input.key->GetDown(KEY_INPUT_F4))
 		{
+			me.SetMessage(COLOR_YELLOW, "Debug Function : Map Reset");
 			this->InitDungeons();
 		}
 		if (input.key->GetDown(KEY_INPUT_M))
@@ -217,18 +256,13 @@ void ScenePlay::Update(void)
 		}
 	}
 
-	if (!this->change_flag)
+	if (this->player->GetAlive() == false)
 	{
-		this->player->Update();
+		this->action_flag = false;
 	}
-	else
-	{
-		if (this->ChangeMap())
-		{
-			this->change_flag = false;
-		}
-	}
+
 	input.key->UpdateOld();
+	this->action_flag_old = this->action_flag;
 }
 
 void ScenePlay::Render(void)
@@ -259,7 +293,8 @@ void ScenePlay::Render(void)
 
 	this->map->Render(screen_pos, Map::GRID_SIZE, false);
 	this->player->Render(screen_pos, Map::GRID_SIZE);
-	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20, 20, COLOR_RED, this->msg_font, "%3d F", this->dng_floor);
+	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20 + 3, 3, COLOR_BLACK, this->msg_font, "%3d F", this->dng_floor);
+	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20, 0, COLOR_AQUA, this->msg_font, "%3d F", this->dng_floor);
 
 	if (this->render_map)
 	{
@@ -276,4 +311,5 @@ void ScenePlay::Render(void)
 		MessageWindow& me = MessageWindow::singleton();
 		me.Render();
 	}
+	this->player->DrawPlayerStatus();
 }

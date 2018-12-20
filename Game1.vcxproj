@@ -89,6 +89,7 @@
   <!-- ソースファイル -->
   <ItemGroup>
     <ClCompile Include="Game\Dungeons.cpp" />
+    <ClCompile Include="Game\Enemy.cpp" />
     <ClCompile Include="Game\Input.cpp" />
     <ClCompile Include="Game\Map.cpp" />
     <ClCompile Include="Game\MapChip.cpp" />
@@ -110,8 +111,10 @@
   </ItemGroup>
   <!-- ヘッダファイル -->
   <ItemGroup>
+    <ClInclude Include="Game\Actor.h" />
     <ClInclude Include="Game\Define.h" />
     <ClInclude Include="Game\Dungeons.h" />
+    <ClInclude Include="Game\Enemy.h" />
     <ClInclude Include="Game\GenerateMap.h" />
     <ClInclude Include="Game\Input.h" />
     <ClInclude Include="Game\Map.h" />
