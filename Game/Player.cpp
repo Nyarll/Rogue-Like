@@ -13,6 +13,8 @@ Player::Player()
 	this->position = { 0,0 };
 	this->velocity = { 0,0 };
 	this->move_count = 0;
+	this->stop_count = 0;
+	this->step_count = 0;
 
 	this->font = CreateFontToHandle("HGS創英ﾌﾟﾚｾﾞﾝｽEB", 32, -1);
 
@@ -29,6 +31,9 @@ Player::Player()
 
 	this->max_hp = rand() % 20 + 10;
 	this->now_hp = this->max_hp;
+
+	this->ATK = Dice(3, 6);
+	this->DEF = Dice(3, 6);
 }
 
 Player::~Player()
@@ -36,35 +41,15 @@ Player::~Player()
 
 }
 
-void Player::SetName(char * name)
-{
-	this->name = name;
-}
-
-char * Player::GetName()
-{
-	return this->name;
-}
-
 void Player::SetFont(int font)
 {
 	this->font = font;
 }
 
-bool Player::GetAlive()
-{
-	return this->alive;
-}
 
 int Player::GetLevel()
 {
 	return this->level;
-}
-
-void Player::ChangeMap(Map* map, int start_x, int start_y)
-{
-	this->map = map;
-	this->position = { (float)(start_x),(float)(start_y) };
 }
 
 bool Player::Update()
@@ -72,10 +57,16 @@ bool Player::Update()
 	static bool act_flag = false;
 	if (this->alive)
 	{
+		if (this->move_count == 1)
+		{
+			this->end_flag = true;
+		}
+
 		// 移動中ではないなら
 		if (this->move_count == 0)
 		{
 			act_flag = false;
+			this->end_flag = false;
 			this->velocity = { 0,0 };
 			InputManager& input = InputManager::singleton();
 			InputKeyBoard* key = input.key;
@@ -84,24 +75,25 @@ bool Player::Update()
 			{
 				this->velocity.y += -1.0f;
 				this->direction = 4;
-
+				this->step_count += 1;
 			}
 			if ((key->GetNow(KEY_INPUT_DOWN)) || key->GetNow(KEY_INPUT_S))
 			{
 				this->velocity.y += 1.0f;
 				this->direction = 1;
-
+				this->step_count += 1;
 			}
 			if ((key->GetNow(KEY_INPUT_LEFT)) || key->GetNow(KEY_INPUT_A))
 			{
 				this->velocity.x += -1.0f;
 				this->direction = 2;
-
+				this->step_count += 1;
 			}
 			if (key->GetNow(KEY_INPUT_RIGHT) || key->GetNow(KEY_INPUT_D))
 			{
 				this->velocity.x += 1.0f;
 				this->direction = 3;
+				this->step_count += 1;
 			}
 
 			if (FloatEquals(this->velocity.x, 0.0f) == false || FloatEquals(this->velocity.y, 0.0f) == false)
@@ -114,6 +106,11 @@ bool Player::Update()
 			this->x_passable = static_cast<int>(this->position.x + this->velocity.x);
 			this->y_passable = static_cast<int>(this->position.y + this->velocity.y);
 
+			if (this->step_count > 5)
+			{
+				this->Healing();
+				this->step_count = 0;
+			}
 		}
 
 		if (this->move_count > 0)
@@ -266,11 +263,6 @@ void Player::DrawPlayerStatus()
 	DrawFormatStringFToHandle(14 * 9, 0, COLOR_AQUA, this->font, "HP(%4d / %4d)", this->now_hp, this->max_hp);
 }
 
-Vector2 Player::GetPosition()const
-{
-	return this->position;
-}
-
 int Player::GetMoveCount() const
 {
 	return this->move_count;
@@ -282,18 +274,20 @@ void Player::LevelUp()
 	msg.SetMessage(COLOR_YELLOW, " %s のレベルが上がった", this->name);
 	this->level += 1;
 	msg.SetMessage(COLOR_YELLOW, " %s は %d レベルになった", this->name, this->level);
+
+	// ステータスアップ
 	int next_hp = this->max_hp + rand() % 20 + 10;
+	msg.SetMessage(COLOR_WHITE, " HP : %d → %d", this->max_hp, next_hp);
 	this->max_hp = next_hp;
 	this->now_hp = next_hp;
-}
 
-Vector2 Player::Attack()
-{
-	MessageWindow& msg = MessageWindow::singleton();
+	int next_ATK = this->ATK + this->Dice(1, 6) + 2;
+	msg.SetMessage(COLOR_WHITE, "ATK : %d → %d", this->ATK, next_ATK);
+	this->ATK = next_ATK;
 
-	msg.SetMessage(this->msg_color, " %s の攻撃", this->name);
-
-	return{ static_cast<float>(this->x_passable), static_cast<float>(this->y_passable) };
+	int next_DEF = this->DEF + this->Dice(1, 6) + 2;
+	msg.SetMessage(COLOR_WHITE, "DEF : %d → %d", this->DEF, next_DEF);
+	this->DEF = next_DEF;
 }
 
 void Player::Damage(int damage)
@@ -310,12 +304,9 @@ void Player::Damage(int damage)
 	}
 }
 
-void Player::Recovery(int recovery)
+void Player::Healing()
 {
-	MessageWindow& msg = MessageWindow::singleton();
-	msg.SetMessage(COLOR_AQUA, " %s は %3d 回復した", this->name, recovery);
-	this->now_hp += recovery;
-
+	this->now_hp += 1;
 	if (this->now_hp > this->max_hp)
 	{
 		this->now_hp = this->max_hp;

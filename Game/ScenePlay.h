@@ -1,6 +1,8 @@
 #pragma once
 #include "Scene.h"
 #include "Dungeons.h"
+#include "Define.h"
+#include "Enemy.h"
 
 class Map;
 class Player;
@@ -9,15 +11,13 @@ typedef enum
 {
 	Wait, // キー入力待ち。もしくは待機中
 
-	// アクション
-	ActBegin, // 開始
-	Act,      // 実行中
-	ActEnd,   // 終了
+	PlayerTurnBegin,
+	PlayerTurnNow,
+	PlayerTurnEnd,
 
-	// 移動
-	MoveBegin, // 開始
-	Move,      // 移動中
-	MoveEnd,   // 完了
+	EnemyTurnBegin,
+	EnemyTurnNow,
+	EnemyTurnEnd,
 
 	TurnEnd,   // ターン終了
 }Action;
@@ -33,10 +33,15 @@ public:
 	~ScenePlay();
 
 private:
+
+	
+
 	Mob_RL mob[RL_MOB_C];
 
 	Map* map;
 	Player* player;
+	
+	std::vector<Enemy> enemy;
 
 	Action act;
 
@@ -45,6 +50,8 @@ private:
 
 	int dng_floor;
 	int msg_font;
+
+	int Sequence_count;
 
 	float deg = 0;
 	int render_cnt = 255;
@@ -57,6 +64,10 @@ private:
 public:
 	void InitDungeons();
 	bool ChangeMap();
+
+	void GotoNextFloor(const Vector2& playerPosition);
+	void MagicCircleAction(const Vector2& actorPosition);
+
 
 	// 操作
 	void Initialize()override {};

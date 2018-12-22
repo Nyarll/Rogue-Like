@@ -4,8 +4,9 @@
 const int MapSizeX = 64;
 const int MapSizeY = 64;
 
-const int NumObject = 40;
 const int NumMobs = 40;
+const int NumObject = 40 + NumMobs;
+
 
 enum
 {
@@ -81,7 +82,7 @@ public:
 	int map[MapSizeY][MapSizeX];
 	Area area[64];
 
-	MobData ObjectPoint[NumObject];
+	MobData ObjectPoint[NumObject + NumMobs];
 
 private:
 	void MapDataFillWall()

@@ -1,6 +1,7 @@
 #include "ScenePlay.h"
 #include "Map.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "MessageWindow.h"
 #include "Input.h"
 
@@ -43,7 +44,11 @@ ScenePlay::ScenePlay()
 	this->msg_font = CreateFontToHandle("HGS創英ﾌﾟﾚｾﾞﾝｽEB", 32, -1);
 	this->change_cnt = 0;
 
-	this->player->SetName("Kame");
+	this->player->SetName("Player");
+
+	this->act = Wait;
+
+	this->Sequence_count = 0;
 }
 
 ScenePlay::~ScenePlay()
@@ -89,7 +94,6 @@ void ScenePlay::InitDungeons()
 			}
 		}
 	}
-
 	this->player->ChangeMap(map, init_pos.x, init_pos.y);
 
 	// 下の階層に降りる階段を設置
@@ -114,7 +118,7 @@ void ScenePlay::InitDungeons()
 	this->map->SetFloorChangePlace(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y));
 
 	// 魔法陣を設置
-	for (int i = 1; i < NumObject - 2; i++)
+	for (int i = 1; i < NumObject - NumMobs; i++)
 	{
 		init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x) - 1,
 			static_cast<float>(this->map->map_->GetInitMobPosition(i).y) - 1 };
@@ -135,6 +139,37 @@ void ScenePlay::InitDungeons()
 			}
 		}
 		this->map->SetMagicCircle(init_pos.x, init_pos.y);
+	}
+
+	// エネミーを設置
+	for (int i = 0; i < this->enemy.size(); i++)
+	{
+		this->enemy.erase(this->enemy.begin() + i);
+	}
+	for (int i = NumObject - NumMobs; i < NumObject - 2; i++)
+	{
+		Enemy enemy;
+		init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x) - 1,
+			static_cast<float>(this->map->map_->GetInitMobPosition(i).y) - 1 };
+		if (!(this->map->IsPassable(static_cast<int>(init_pos.x - 1), static_cast<int>(init_pos.y))) &&
+			!(this->map->IsPassable(static_cast<int>(init_pos.x + 1), static_cast<int>(init_pos.y))) &&
+			!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y - 1))) &&
+			!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y + 1))))
+		{
+			while (1)
+			{
+				this->map->map_->MobInstallTo(i);
+				init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x),
+					static_cast<float>(this->map->map_->GetInitMobPosition(i).y) };
+				if ((this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y))))
+				{
+					break;
+				}
+			}
+		}
+		enemy.SetPositon(init_pos.x, init_pos.y);
+		enemy.ChangeMap(this->map, init_pos.x, init_pos.y);
+		this->enemy.push_back(enemy);
 	}
 }
 
@@ -162,6 +197,50 @@ bool ScenePlay::ChangeMap()
 	return false;
 }
 
+void ScenePlay::GotoNextFloor(const Vector2 & playerPosition)
+{
+	MessageWindow& msg = MessageWindow::singleton();
+	if (this->map->GetCellid(static_cast<int>(playerPosition.x), static_cast<int>(playerPosition.y)) == 2)
+	{
+		this->change_flag = true;
+		msg.SetMessage(COLOR_WHITE, "下の階層へ...");
+	}
+}
+
+void ScenePlay::MagicCircleAction(const Vector2 & actorPosition)
+{
+	MessageWindow& msg = MessageWindow::singleton();
+	if (this->map->GetCellid(static_cast<int>(actorPosition.x), static_cast<int>(actorPosition.y)) == 3
+		&& (this->action_flag && this->action_flag_old))
+	{
+		int info_color = 0xffff8800;
+		msg.SetMessage(COLOR_WHITE, " %s は 魔法陣を踏んだ", this->player->GetName());
+
+		if (rand() % 2)
+		{
+
+			msg.SetMessage(info_color, "魔法陣の効果が発動！");
+			switch (rand() % 2)
+			{
+			case 0:
+				msg.SetMessage(info_color, "魔法陣はダメージトラップだった");
+				this->player->Damage(rand() % 10 + 1);
+				break;
+
+			case 1:
+				msg.SetMessage(info_color, "魔法陣は回復魔法陣だった");
+				this->player->Recovery(rand() % 30 + 2);
+				break;
+			}
+		}
+		else
+		{
+			msg.SetMessage(info_color, "何も起こらなかった");
+		}
+		this->map->SetFloorDefault(static_cast<int>(actorPosition.x), static_cast<int>(actorPosition.y));
+	}
+}
+
 void ScenePlay::Update(void)
 {
 	InputManager& input = InputManager::singleton();
@@ -170,11 +249,100 @@ void ScenePlay::Update(void)
 
 	if (!this->change_flag)
 	{
-		this->action_flag = this->player->Update();
+		// シークエンス処理
+		switch (this->act)
+		{
+		case Wait:
+		{
+			this->act = PlayerTurnBegin;
+		}
+		me.SetMessage(0xffff00ff, "Debug Log : Wait Sequence");
+		break;
+
+		case PlayerTurnBegin:
+		{
+			if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
+			{
+				player->Attack();
+				this->act = EnemyTurnBegin;
+			}
+			if (this->player->Update())
+			{
+				me.SetMessage(0xffff00ff, "Debug Log : PlayerTurnBegin Sequence");
+				this->act = PlayerTurnNow;
+			}
+		}
+		break;
+		case PlayerTurnNow:
+		{
+			this->player->Update();
+			if (this->player->CheckTurnEnd())
+			{
+				this->act = PlayerTurnEnd;
+				me.SetMessage(0xffff00ff, "Debug Log : PlayerTurnNow Sequence");
+				this->player->SetTurnEndFlag();
+			}
+		}
+		break;
+		case PlayerTurnEnd:
+		{
+			this->player->Update();
+			this->act = EnemyTurnBegin;
+			me.SetMessage(0xffff00ff, "Debug Log : PlayerTurnEnd Sequence");
+		}
+		break;
+
+		case EnemyTurnBegin:
+			// すべてのエネミーにプレイヤーの座標を登録
+			for (int i = 0; i < this->enemy.size(); i++)
+			{
+				this->enemy[i].SetTargetPosition(this->player->GetPosition());
+			}
+			this->act = EnemyTurnNow;
+			me.SetMessage(0xffff00ff, "Debug Log : EnemyTurnBegin Sequence");
+			break;
+
+		case EnemyTurnNow:
+		{
+			int end_cnt = 0;
+			for (int i = 0; i < this->enemy.size(); i++)
+			{
+				this->enemy[i].Update();
+				if (this->enemy[i].CheckTurnEnd())
+				{
+					end_cnt++;
+				}
+				if (end_cnt == enemy.size())	// すべてのエネミーObject行動完了したらエンドシークエンスへ
+				{
+					this->act = EnemyTurnEnd;
+					me.SetMessage(0xffff00ff, "Debug Log : EnemyTurnNow Sequence");
+					for (int k = 0; k < this->enemy.size(); k++)
+					{
+						this->enemy[k].SetTurnEndFlag();
+					}
+				}
+			}
+		}
+		break;
+
+		case EnemyTurnEnd:
+			/*for (int i = 0; i < this->enemy.size(); i++)
+			{
+				this->enemy[i].Update();
+			}*/
+			this->act = TurnEnd;
+			me.SetMessage(0xffff00ff, "Debug Log : EnemyTurnEnd Sequence");
+			break;
+
+		case TurnEnd:	// 全シークエンス終了
+			this->act = Wait;
+			me.SetMessage(0xffff00ff, "Debug Log : TurnEnd Sequence");
+			break;
+		}
 	}
 	else
 	{
-		if (this->ChangeMap())
+		if (this->ChangeMap())	// マップチェンジ
 		{
 			this->change_flag = false;
 		}
@@ -183,50 +351,16 @@ void ScenePlay::Update(void)
 	{
 		if (this->player->GetMoveCount() == 0)
 		{
-			Vector2 p_pos = this->player->GetPosition();
-			if (this->map->GetCellid(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y)) == 2
-				&& (this->action_flag && this->action_flag_old))
-			{
-				this->change_flag = true;
-				me.SetMessage(COLOR_WHITE, "下の階層へ...");
-			}
-			if (this->map->GetCellid(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y)) == 3
-				&& (this->action_flag && this->action_flag_old))
-			{
-				int info_color = 0xffff8800;
-				me.SetMessage(COLOR_WHITE, " %s は 魔法陣を踏んだ", this->player->GetName());
 
-				if (rand() % 2)
-				{
-					
-					me.SetMessage(info_color, "魔法陣の効果が発動！");
-					switch (rand() % 2)
-					{
-					case 0:
-						me.SetMessage(info_color, "魔法陣はダメージトラップだった");
-						this->player->Damage(rand() % 10 + 1);
-						break;
-
-					case 1:
-						me.SetMessage(info_color, "魔法陣は回復魔法陣だった");
-						this->player->Recovery(rand() % 30 + 2);
-						break;
-					}
-				}
-				else
-				{
-					me.SetMessage(info_color, "何も起こらなかった");
-				}
-				this->map->SetFloorDefault(static_cast<int>(p_pos.x), static_cast<int>(p_pos.y));
-
-			}
-			if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
-			{
-				player->Attack();
-			}
 		}
 	}
+
+	// 機能 / ターンには直接影響を及ぼさないもの
 	{
+		Vector2 p_pos = this->player->GetPosition();
+
+		this->GotoNextFloor(p_pos);
+		this->MagicCircleAction(p_pos);
 		if (input.key->GetDown(KEY_INPUT_F4))
 		{
 			me.SetMessage(COLOR_YELLOW, "Debug Function : Map Reset");
@@ -293,6 +427,11 @@ void ScenePlay::Render(void)
 
 	this->map->Render(screen_pos, Map::GRID_SIZE, false);
 	this->player->Render(screen_pos, Map::GRID_SIZE);
+	for (int i = 0; i < this->enemy.size(); i++)
+	{
+		this->enemy[i].Render(screen_pos, Map::GRID_SIZE);
+	}
+
 	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20 + 3, 3, COLOR_BLACK, this->msg_font, "%3d F", this->dng_floor);
 	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20, 0, COLOR_AQUA, this->msg_font, "%3d F", this->dng_floor);
 
@@ -304,6 +443,14 @@ void ScenePlay::Render(void)
 		Vector2 correction = { SCREEN_CENTER_X - (16 * 16) / 2,SCREEN_CENTER_Y - (16 * 16) / 2 };
 
 		this->map->DrawMap(correction, x, y);
+
+		for (int i = 0; i < this->enemy.size(); i++)
+		{
+			int ex = static_cast<int>(((this->enemy[i].GetPosition().x + 0.5f) * 4) - 0);
+			int ey = static_cast<int>(((this->enemy[i].GetPosition().y + 0.5f) * 4) - 0);
+
+			DrawCircle(ex + correction.x, ey + correction.y, 2, COLOR_RED, TRUE);
+		}
 	}
 	SetDrawBright(255, 255, 255);
 	if (this->render_msg)

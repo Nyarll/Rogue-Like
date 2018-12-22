@@ -5,6 +5,14 @@
 
 class Map;
 
+enum
+{
+	Left,
+	Right,
+	Up,
+	Down
+};
+
 class Enemy extends Actor
 {
 private:
@@ -15,12 +23,22 @@ private:
 	static const std::vector<std::string> EnemyNameList;
 
 private:
-	std::string name;
+	Vector2 target_pos;
 
-
+	int move_direction;
 
 public:
 	Enemy();
 	~Enemy();
+
+	void SetTargetPosition(const Vector2& target);
+
+	int GetMovingDirection();
+
+	bool Update()override;
+
+	void Render(const Vector2& screen_position, const int grid_size)override;
+
+	void Damage(int damage)override;			// éÛÇØÇÈÉ_ÉÅÅ[ÉW
 };
 

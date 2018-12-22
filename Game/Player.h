@@ -13,46 +13,38 @@ public:
 	static const int GRAPH_SIZE_Y;
 
 private:
-	char* name;
 
 	int level;
 
-	bool alive = true;
-
-	int move_count;
 	int stop_count;
+
+	int step_count;		// 歩数
 
 	int animation_cnt;	// アニメーション用カウンタ
 	Vector2 graph_p;
 
 	int font;
 
-	int msg_color;
-
 public:
 	Player();
 	~Player();
 
-	void SetName(char* name);
-	char* GetName();
-
 	void SetFont(int font);
 
-	bool GetAlive();
 	int GetLevel();
 
-	void ChangeMap(Map* map, int start_x, int start_y);
-	bool Update();
-	void Render(const Vector2& screen_position, const int grid_size);
+	bool Update()override;
+
+	void Render(const Vector2& screen_position, const int grid_size)override;
 	void DrawPlayerStatus();
 
-	Vector2 GetPosition()const;
+	
 	int GetMoveCount()const;
 
-	void LevelUp();
-	Vector2 Attack();
-	void Damage(int damage);
-	void Recovery(int recovery);
+	void LevelUp();								// レベルアップ
+	void Damage(int damage)override;			// プレイヤーが受けるダメージ
+
+	void Healing();							// 回復(何歩か歩くと１回復するやつ)
 
 	
 };

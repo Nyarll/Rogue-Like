@@ -88,6 +88,7 @@
   </ItemDefinitionGroup>
   <!-- ソースファイル -->
   <ItemGroup>
+    <ClCompile Include="Game\Actor.cpp" />
     <ClCompile Include="Game\Dungeons.cpp" />
     <ClCompile Include="Game\Enemy.cpp" />
     <ClCompile Include="Game\Input.cpp" />
