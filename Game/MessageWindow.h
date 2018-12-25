@@ -38,7 +38,7 @@ public:
 		}
 		if (this->cnt > -1)
 		{
-			this->cnt -= 0.5;
+			//this->cnt -= 0.5;
 		}
 		else
 		{

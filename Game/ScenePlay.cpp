@@ -210,8 +210,7 @@ void ScenePlay::GotoNextFloor(const Vector2 & playerPosition)
 void ScenePlay::MagicCircleAction(const Vector2 & actorPosition)
 {
 	MessageWindow& msg = MessageWindow::singleton();
-	if (this->map->GetCellid(static_cast<int>(actorPosition.x), static_cast<int>(actorPosition.y)) == 3
-		&& (this->action_flag && this->action_flag_old))
+	if (this->map->GetCellid(static_cast<int>(actorPosition.x), static_cast<int>(actorPosition.y)) == 3)
 	{
 		int info_color = 0xffff8800;
 		msg.SetMessage(COLOR_WHITE, " %s ‚Í –‚–@w‚ð“¥‚ñ‚¾", this->player->GetName());
@@ -268,7 +267,7 @@ void ScenePlay::Update(void)
 			}
 			if (this->player->Update())
 			{
-				me.SetMessage(0xffff00ff, "Debug Log : PlayerTurnBegin Sequence");
+				me.SetMessage(0xffffff00, "Debug Log : PlayerTurnBegin Sequence");
 				this->act = PlayerTurnNow;
 			}
 		}
@@ -279,7 +278,7 @@ void ScenePlay::Update(void)
 			if (this->player->CheckTurnEnd())
 			{
 				this->act = PlayerTurnEnd;
-				me.SetMessage(0xffff00ff, "Debug Log : PlayerTurnNow Sequence");
+				me.SetMessage(0xffffff00, "Debug Log : PlayerTurnNow Sequence");
 				this->player->SetTurnEndFlag();
 			}
 		}
@@ -288,7 +287,7 @@ void ScenePlay::Update(void)
 		{
 			this->player->Update();
 			this->act = EnemyTurnBegin;
-			me.SetMessage(0xffff00ff, "Debug Log : PlayerTurnEnd Sequence");
+			me.SetMessage(0xffffff00, "Debug Log : PlayerTurnEnd Sequence");
 		}
 		break;
 
@@ -307,7 +306,7 @@ void ScenePlay::Update(void)
 			int end_cnt = 0;
 			for (int i = 0; i < this->enemy.size(); i++)
 			{
-				this->enemy[i].Update();
+				this->enemy[i].Update(this->enemy, i);
 				if (this->enemy[i].CheckTurnEnd())
 				{
 					end_cnt++;

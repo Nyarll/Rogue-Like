@@ -1,7 +1,7 @@
 #include "Enemy.h"
 #include "Map.h"
 
-const std::vector<std::string> Enemy::EnemyNameList = 
+const std::vector<std::string> Enemy::EnemyNameList =
 {
 	"スライム",
 	"バット"
@@ -29,13 +29,13 @@ int Enemy::GetMovingDirection()
 	dx = this->target_pos.x - this->position.x;
 	dy = this->target_pos.y - this->position.y;
 
-	if (abs(dx) > abs(dy)) 
+	if (abs(dx) > abs(dy))
 	{
 		// X方向への距離の方が遠いのでそっちに進む
 		if (dx < 0) { return Left; } // 左
 		else { return Right; } // 右
 	}
-	else 
+	else
 	{
 		// Y方向へ進む
 		if (dy < 0) { return Up; } // 上
@@ -44,7 +44,7 @@ int Enemy::GetMovingDirection()
 }
 
 
-bool Enemy::Update()
+bool Enemy::Update(std::vector<Enemy>& enemy, int num)
 {
 	static bool act_flag = false;
 
@@ -58,31 +58,38 @@ bool Enemy::Update()
 		act_flag = false;
 		this->end_flag = false;
 		this->move_direction = this->GetMovingDirection();
+		this->velocity = { 0,0 };
+
+		float vel = (1.0f);
 		switch (this->move_direction)
 		{
 		case Left:
-			this->velocity.x = (-1.0f) / 2;
+			this->velocity.x = (-vel);
 			this->velocity.y = (0.0f);
 			break;
 
 		case Right:
-			this->velocity.x = (1.0f) / 2;
+			this->velocity.x = (vel);
 			this->velocity.y = (0.0f);
 			break;
 
 		case Up:
 			this->velocity.x = (0.0f);
-			this->velocity.y = (-1.0f) / 2;
+			this->velocity.y = (-vel);
 			break;
 
 		case Down:
 			this->velocity.x = (0.0f);
-			this->velocity.y = (1.0f) / 2;
+			this->velocity.y = (vel);
 			break;
 		}
 		if (FloatEquals(this->velocity.x, 0.0f) == false || FloatEquals(this->velocity.y, 0.0f) == false)
 		{
 			this->move_count = MOVING_INTERVAL;
+		}
+		else
+		{
+			this->end_flag = true;
 		}
 
 		this->x_now = static_cast<int>(this->position.x);
@@ -95,40 +102,30 @@ bool Enemy::Update()
 	{
 		this->move_count--;
 		// 行きたい方向へ行けるかどうかチェック
-		if ((static_cast<int>(this->target_pos.x) == x_passable)
-			&& (static_cast<int>(this->target_pos.y) == y_passable))
+		if ((static_cast<int>(this->target_pos.x) == x_passable) && (static_cast<int>(this->target_pos.y) == y_passable))
 		{
 			this->velocity.x = 0;
 			this->velocity.y = 0;
 		}
-		if (this->velocity.x != 0 && this->velocity.y != 0)
+		for (int i = 0; i < enemy.size(); i++)
 		{
-			if (this->map->IsPassable(x_passable, y_passable))
+			if (i != num)
 			{
-				if ((this->map->IsPassable(this->x_passable, this->y_now)))
+				int ex = static_cast<int>(enemy[i].GetPosition().x);
+				int ey = static_cast<int>(enemy[i].GetPosition().y);
+				if ((ex == x_passable) && (ey == y_passable))
 				{
-					if (!act_flag)
-					{
-						act_flag = true;
-					}
-					this->position.x += this->velocity.x / (MOVING_INTERVAL);
-
-				}
-				if ((this->map->IsPassable(this->x_now, this->y_passable)))
-				{
-					if (!act_flag)
-					{
-						act_flag = true;
-					}
-					this->position.y += this->velocity.y / (MOVING_INTERVAL);
+					this->velocity.x = 0;
+					this->velocity.y = 0;
+					break;
 				}
 			}
 		}
-		else
+
 		{
 			if (this->map->IsPassable(x_passable, y_passable))
 			{
-				if ((this->map->IsPassable(this->x_passable, this->y_now)))
+				if ((static_cast<int>(this->target_pos.x) != x_passable))
 				{
 					this->position.x += this->velocity.x / (MOVING_INTERVAL);
 					if (!act_flag)
@@ -136,18 +133,8 @@ bool Enemy::Update()
 						act_flag = true;
 					}
 				}
-				if ((this->map->IsPassable(this->x_now, this->y_passable)))
+				if ((static_cast<int>(this->target_pos.y) != y_passable))
 				{
-					this->position.y += this->velocity.y / (MOVING_INTERVAL);
-					if (!act_flag)
-					{
-						act_flag = true;
-					}
-				}
-				if ((static_cast<int>(this->target_pos.x) != x_passable) 
-					&& (static_cast<int>(this->target_pos.y) != y_passable))
-				{
-					this->position.x += this->velocity.x / (MOVING_INTERVAL);
 					this->position.y += this->velocity.y / (MOVING_INTERVAL);
 					if (!act_flag)
 					{
@@ -174,7 +161,7 @@ bool Enemy::Update()
 		{
 			this->position.y = 0.0f;
 		}
-		if (this->position.x >(float)(Map::GRID_COLS - 1))
+		if (this->position.x > (float)(Map::GRID_COLS - 1))
 		{
 			this->position.x = (float)(Map::GRID_COLS - 1);
 		}
