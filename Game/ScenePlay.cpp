@@ -300,7 +300,7 @@ void ScenePlay::Update(void)
 						this->enemy[i].Damage(this->player->AttackDamage(this->enemy[i].GetDEF()));
 						if (!enemy[i].GetAlive())
 						{
-							me.SetMessage(COLOR_YELLOW, "%s は プレイヤーに倒された", enemy[i].GetName());
+							me.SetMessage(COLOR_AQUA, "%s は プレイヤーに倒された", enemy[i].GetName());
 							this->enemy.erase(this->enemy.begin() + i);
 						}
 					}
