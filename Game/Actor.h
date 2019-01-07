@@ -3,6 +3,14 @@
 
 #include "Define.h"
 
+enum
+{
+	Left,
+	Right,
+	Up,
+	Down
+};
+
 class Map;
 
 class Actor
@@ -53,9 +61,11 @@ public:
 	bool CheckTurnEnd();
 	void SetTurnEndFlag();
 
+	int GetDEF();
+
 	virtual void Render(const Vector2& screen_position, const int grid_size) = 0;
 
-	Vector2 Attack();					// 攻撃
+	virtual Vector2 Attack() = 0;					// 攻撃
 	int AttackDamage(int OpponentDEF);	// 引数 : 攻撃先の守備力 , 戻り値 : ダメージ
 	virtual void Damage(int damage) = 0;			// 受けるダメージ
 	void Recovery(int recovery);			// 回復

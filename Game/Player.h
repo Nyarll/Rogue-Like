@@ -43,6 +43,7 @@ public:
 	int GetMoveCount()const;
 
 	void LevelUp();								// レベルアップ
+	Vector2 Attack()override;
 	void Damage(int damage)override;			// プレイヤーが受けるダメージ
 
 	void Healing();							// 回復(何歩か歩くと１回復するやつ)

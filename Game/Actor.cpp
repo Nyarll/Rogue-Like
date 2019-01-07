@@ -59,13 +59,9 @@ void Actor::SetTurnEndFlag()
 	this->end_flag = false;
 }
 
-Vector2 Actor::Attack()
+int Actor::GetDEF()
 {
-	MessageWindow& msg = MessageWindow::singleton();
-
-	msg.SetMessage(this->msg_color, " %s ‚ÌUŒ‚", this->name);
-
-	return{ static_cast<float>(this->x_passable), static_cast<float>(this->y_passable) };
+	return this->DEF;
 }
 
 int Actor::AttackDamage(int OpponentDEF)

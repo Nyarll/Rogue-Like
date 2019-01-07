@@ -29,7 +29,7 @@ Vector2 Vector2::Div(float div)
 	return{ this->x / div, this->y / div };
 }
 
-Vector2 Vector2::Nomalize()
+Vector2 Vector2::Normalized()
 {
 	float len = this->Length();
 	return{ this->x / len,this->y / len };
@@ -95,6 +95,15 @@ void Vector2::Decompose(Vector2* vec2, Vector2* outvec1, Vector2* outvec2)
 	*outvec1 = { vec_a_length * cosf(vec_a_rota), vec_a_length * sinf(vec_a_rota) };
 	*outvec2 = { vec_b_length * cosf(vec_b_rota), vec_b_length * sinf(vec_b_rota) };
 }
+
+Vector2 Vector2::TranslateTowards(const Vector2& from, const Vector2& to, float maxDelta)
+{
+	Vector2 sub = to - from;
+	Vector2 vel = sub.Normalized() * maxDelta;
+	Vector2 towards = (vel.LengthSquared() < sub.LengthSquared()) ? vel : sub;
+	return from + towards;
+}
+
 bool Vector2::CrossPoint(Vector2* vec1_gool, Vector2* vec2_start, Vector2* vec2_gool, Vector2* output)
 {
 	Vector2 p1 = { this->x,this->y };

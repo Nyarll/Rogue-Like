@@ -30,7 +30,8 @@ public:
 
 private:
 
-	
+	Vector2 playerAttackPoint = { -1,-1 };
+	Vector2 enemyAttackPoint = { -1,-1 };
 
 	Mob_RL mob[RL_MOB_C];
 

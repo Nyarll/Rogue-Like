@@ -5,14 +5,6 @@
 
 class Map;
 
-enum
-{
-	Left,
-	Right,
-	Up,
-	Down
-};
-
 class Enemy extends Actor
 {
 private:
@@ -20,7 +12,7 @@ private:
 	static const int GRAPH_SIZE_X = 32;
 	static const int GRAPH_SIZE_Y = 32;
 
-	static const std::vector<std::string> EnemyNameList;
+	static std::vector<std::string> EnemyNameList;
 
 private:
 	Vector2 target_pos;
@@ -39,6 +31,7 @@ public:
 
 	void Render(const Vector2& screen_position, const int grid_size)override;
 
+	Vector2 Attack()override;
 	void Damage(int damage)override;			// éÛÇØÇÈÉ_ÉÅÅ[ÉW
 };
 

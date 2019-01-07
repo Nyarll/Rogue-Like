@@ -316,6 +316,35 @@ void Player::LevelUp()
 	this->DEF = next_DEF;
 }
 
+Vector2 Player::Attack()
+{
+	MessageWindow& msg = MessageWindow::singleton();
+
+	msg.SetMessage(this->msg_color, " %s ‚ÌUŒ‚", this->name);
+
+	int atk_x = static_cast<int>(this->position.x), atk_y = static_cast<int>(this->position.y);
+
+	switch (this->direction)
+	{
+	case 2:
+		atk_x -= 1;
+		break;
+
+	case 3:
+		atk_x += 1;
+		break;
+
+	case 4:
+		atk_y -= 1;
+		break;
+
+	case 1:
+		atk_y += 1;
+		break;
+	}
+	return{ static_cast<float>(atk_x), static_cast<float>(atk_y) };
+}
+
 void Player::Damage(int damage)
 {
 	MessageWindow& msg = MessageWindow::singleton();

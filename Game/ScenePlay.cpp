@@ -264,6 +264,9 @@ void ScenePlay::Update(void)
 		{
 		case Wait:
 		{
+			this->playerAttackPoint = { -1,-1 };
+			this->enemyAttackPoint = { -1,-1 };
+
 			this->act = PlayerTurn;
 		}
 		me.SetMessage(0xffff00ff, "Debug Log : Wait Sequence");
@@ -273,7 +276,7 @@ void ScenePlay::Update(void)
 		{
 			if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
 			{
-				player->Attack();
+				this->playerAttackPoint = player->Attack();
 				this->act = EnemyTurn;
 			}
 			if (this->player->Update(this->enemy))
@@ -286,6 +289,24 @@ void ScenePlay::Update(void)
 
 		case EnemyTurn:
 		{
+			// エネミーがプレイヤーから攻撃されたかどうか
+			if (static_cast<int>(this->playerAttackPoint.x) != (-1) &&
+				static_cast<int>(this->playerAttackPoint.y) != (-1))
+			{
+				for (int i = 0; i < this->enemy.size(); i++)
+				{
+					if (this->enemy[i].GetPosition() == this->playerAttackPoint)
+					{
+						this->enemy[i].Damage(this->player->AttackDamage(this->enemy[i].GetDEF()));
+						if (enemy[i].GetAlive())
+						{
+							me.SetMessage(COLOR_YELLOW, "%s は プレイヤーに倒された", enemy[i].GetName());
+							this->enemy.erase(this->enemy.begin() + i);
+						}
+					}
+				}
+			}
+
 			// すべてのエネミーにプレイヤーの座標を登録
 			for (int i = 0; i < this->enemy.size(); i++)
 			{
