@@ -48,6 +48,11 @@ void MessageWindow::SetMessage(int msgColor, std::string fmt_str, ...)
 
 void MessageWindow::Render()
 {
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+	DrawBox(this->start_x, this->start_y, 400, this->end_y, COLOR_BLACK, true);
+	DrawBox(this->start_x, this->start_y, 400, this->end_y, COLOR_RED, false);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 	for (int i = 0; i < this->message.size(); i++)
 	{
 		int y = message[i].GetPointY();

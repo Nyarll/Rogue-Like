@@ -38,11 +38,7 @@ public:
 		}
 		if (this->cnt > -1)
 		{
-			//this->cnt -= 0.5;
-		}
-		else
-		{
-			this->render = false;
+			this->cnt -= 0.5;
 		}
 	}
 	void SetPointX(const int& x) { this->x = x; }
@@ -59,7 +55,7 @@ private:
 	static const int RenderMax = 20 * 8;
 
 	int start_x = 0, start_y = RenderMax;
-	int end_x = SCREEN_CENTER_X / 2, end_y = SCREEN_BOTTOM;
+	int end_x = SCREEN_CENTER_X, end_y = SCREEN_BOTTOM;
 	int font;
 
 	friend class Singleton<MessageWindow>;

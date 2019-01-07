@@ -19,17 +19,22 @@ private:
 
 	int move_direction;
 
+	int exp;
+
 public:
-	Enemy();
+	Enemy(int player_level);
 	~Enemy();
 
 	void SetTargetPosition(const Vector2& target);
 
-	int GetMovingDirection();
+	int GetMovingDirection();	// 基本的な移動
+	int CloggedMovingDirection(std::vector<Enemy>& enemy, int num);	// モブ同士で詰まってしまった場合
 
 	bool Update(std::vector<Enemy>& enemy, int num);
 
 	void Render(const Vector2& screen_position, const int grid_size)override;
+
+	int GetExp();
 
 	Vector2 Attack()override;
 	void Damage(int damage)override;			// 受けるダメージ

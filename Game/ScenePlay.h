@@ -48,6 +48,8 @@ private:
 	int dng_floor;
 	int msg_font;
 
+	int ui_font;
+
 	int Sequence_count;
 
 	float deg = 0;
@@ -57,6 +59,8 @@ private:
 
 	bool action_flag = false;
 	bool action_flag_old = false;
+
+	int wait_time = 0;
 
 public:
 	void InitDungeons();

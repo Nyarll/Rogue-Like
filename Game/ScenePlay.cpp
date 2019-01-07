@@ -16,7 +16,7 @@ ScenePlay::ScenePlay()
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
 	this->render_map = false;
-	this->render_msg = true;
+	this->render_msg = false;
 	this->dng_floor = 1;
 
 	this->act = Wait;
@@ -42,6 +42,8 @@ ScenePlay::ScenePlay()
 	this->InitDungeons();
 
 	this->msg_font = CreateFontToHandle("HGS‘n‰pÌßÚ¾Şİ½EB", 32, -1);
+	this->ui_font = CreateFontToHandle("Cooper Black", 20, -1);
+
 	this->change_cnt = 0;
 
 	this->player->SetName("Player");
@@ -96,27 +98,6 @@ void ScenePlay::InitDungeons()
 	}
 	this->player->ChangeMap(map, init_pos.x, init_pos.y);
 
-	// ‰º‚ÌŠK‘w‚É~‚è‚éŠK’i‚ğİ’u
-	init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).x) - 1,
-		static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).y) - 1 };
-	if (!(this->map->IsPassable(static_cast<int>(init_pos.x - 1), static_cast<int>(init_pos.y))) &&
-		!(this->map->IsPassable(static_cast<int>(init_pos.x + 1), static_cast<int>(init_pos.y))) &&
-		!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y - 1))) &&
-		!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y + 1))))
-	{
-		while (1)
-		{
-			this->map->map_->MobInstallTo(NumObject - 1);
-			init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).x),
-				static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).y) };
-			if ((this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y))))
-			{
-				break;
-			}
-		}
-	}
-	this->map->SetFloorChangePlace(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y));
-
 	// –‚–@w‚ğİ’u
 	for (int i = 1; i < NumObject - NumMobs; i++)
 	{
@@ -148,7 +129,7 @@ void ScenePlay::InitDungeons()
 	}
 	for (int i = NumObject - NumMobs; i < NumObject - 2; i++)
 	{
-		Enemy enemy;
+		Enemy enemy(this->player->GetLevel());
 		init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x) - 1,
 			static_cast<float>(this->map->map_->GetInitMobPosition(i).y) - 1 };
 		if (!(this->map->IsPassable(static_cast<int>(init_pos.x - 1), static_cast<int>(init_pos.y))) &&
@@ -171,6 +152,28 @@ void ScenePlay::InitDungeons()
 		enemy.ChangeMap(this->map, init_pos.x, init_pos.y);
 		this->enemy.push_back(enemy);
 	}
+
+	// ‰º‚ÌŠK‘w‚É~‚è‚éŠK’i‚ğİ’u
+	init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).x) - 1,
+		static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).y) - 1 };
+	if (!(this->map->IsPassable(static_cast<int>(init_pos.x - 1), static_cast<int>(init_pos.y))) &&
+		!(this->map->IsPassable(static_cast<int>(init_pos.x + 1), static_cast<int>(init_pos.y))) &&
+		!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y - 1))) &&
+		!(this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y + 1))))
+	{
+		while (1)
+		{
+			this->map->map_->MobInstallTo(NumObject - 1);
+			init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).x),
+				static_cast<float>(this->map->map_->GetInitMobPosition(NumObject - 1).y) };
+			if ((this->map->IsPassable(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y))))
+			{
+				break;
+			}
+		}
+	}
+	this->map->SetFloorChangePlace(static_cast<int>(init_pos.x), static_cast<int>(init_pos.y));
+
 }
 
 bool ScenePlay::ChangeMap()
@@ -183,7 +186,7 @@ bool ScenePlay::ChangeMap()
 	if (this->deg == 180)
 	{
 		this->InitDungeons();
-		this->dng_floor += 1;
+		//this->dng_floor += 1;
 	}
 
 	if (this->deg == 360)
@@ -209,6 +212,7 @@ void ScenePlay::GotoNextFloor(const Vector2 & playerPosition)
 		if (!flag)
 		{
 			msg.SetMessage(COLOR_WHITE, "‰º‚ÌŠK‘w‚Ö...");
+			this->dng_floor += 1;
 			flag = true;
 		}
 	}
@@ -300,7 +304,9 @@ void ScenePlay::Update(void)
 						this->enemy[i].Damage(this->player->AttackDamage(this->enemy[i].GetDEF()));
 						if (!enemy[i].GetAlive())
 						{
-							me.SetMessage(COLOR_AQUA, "%s ‚Í ƒvƒŒƒCƒ„[‚É“|‚³‚ê‚½", enemy[i].GetName());
+							me.SetMessage(COLOR_AQUA, "%s ‚Í “|‚³‚ê‚½", enemy[i].GetName());
+							me.SetMessage(COLOR_AQUA, "%s ‚Í %d ‚ÌŒoŒ±’l‚ğŠl“¾", this->player->GetName(), this->enemy[i].GetExp());
+							this->player->AddExp(this->enemy[i].GetExp());
 							this->enemy.erase(this->enemy.begin() + i);
 						}
 					}
@@ -360,7 +366,7 @@ void ScenePlay::Update(void)
 				this->render_map = false;
 			}
 		}
-		if (input.key->GetDown(KEY_INPUT_V))
+		if (input.key->GetDown(KEY_INPUT_T))
 		{
 			if (!this->render_msg)
 			{
@@ -423,7 +429,8 @@ void ScenePlay::Render(void)
 		int x = static_cast<int>(((this->player->GetPosition().x + 0.5f) * 4) - 0);
 		int y = static_cast<int>(((this->player->GetPosition().y + 0.5f) * 4) - 0);
 
-		Vector2 correction = { SCREEN_CENTER_X - (16 * 16) / 2,SCREEN_CENTER_Y - (16 * 16) / 2 };
+		Vector2 correction = { SCREEN_CENTER_X - (16 * 16) / 2 + SCREEN_RIGHT / 4,
+			SCREEN_CENTER_Y - (16 * 16) / 2 - SCREEN_BOTTOM / 4 };
 
 		this->map->DrawMap(correction, x, y);
 
@@ -436,10 +443,35 @@ void ScenePlay::Render(void)
 		}
 	}
 	SetDrawBright(255, 255, 255);
+	
+	this->player->DrawPlayerStatus();
+
 	if (this->render_msg)
 	{
 		MessageWindow& me = MessageWindow::singleton();
 		me.Render();
 	}
-	this->player->DrawPlayerStatus();
+	else
+	{
+		this->player->DrawPlayerExp();
+	}
+
+	if (this->player->GetMoveCount() == 0)
+	{
+		this->wait_time++;
+
+		if (this->wait_time >= 60 * 6)
+		{
+			this->wait_time = 60;
+			
+		}
+	}
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 34, SCREEN_BOTTOM - 20,
+		COLOR_BLACK, this->ui_font, "Message Log : T key");
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 34 - 3, SCREEN_BOTTOM - 20 - 3,
+		COLOR_YELLOW, this->ui_font, "Message Log : T key");
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 20, SCREEN_BOTTOM - 40,
+		COLOR_BLACK, this->ui_font, "Map : M key");
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 20 - 3, SCREEN_BOTTOM - 40 - 3,
+		COLOR_YELLOW, this->ui_font, "Map : M key");
 }

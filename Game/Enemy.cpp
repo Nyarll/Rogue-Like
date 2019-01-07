@@ -9,13 +9,15 @@ std::vector<std::string> Enemy::EnemyNameList =
 	"バット"
 };
 
-Enemy::Enemy()
+Enemy::Enemy(int player_level)
 {
 	this->move_count = 0;
 	this->direction = Down;
 
-	this->max_hp = this->Dice(3, 10) + this->Dice(2, 4);
+	this->max_hp = this->Dice(3 + (player_level - 1), 6) + this->Dice(2, 4);
 	this->now_hp = this->max_hp;
+
+	this->exp = this->max_hp + Dice(player_level, 6);
 
 	this->name = "Test Monster";
 
@@ -35,22 +37,151 @@ void Enemy::SetTargetPosition(const Vector2& target)
 
 int Enemy::GetMovingDirection()
 {
-	int dx, dy;
-	dx = this->target_pos.x - this->position.x;
-	dy = this->target_pos.y - this->position.y;
+	int search_area = 3;
+	int ex = static_cast<int>(this->position.x);
+	int ey = static_cast<int>(this->position.y);
+	int tx = static_cast<int>(this->target_pos.x);
+	int ty = static_cast<int>(this->target_pos.y);
 
-	if (abs(dx) > abs(dy))
+	// サーチ範囲内にプレイヤーがいるかどうか
+	if ((ex - search_area <= tx) && (ex + search_area >= tx) &&
+		(ey - search_area <= ty) && (ey + search_area >= ty))
 	{
-		// X方向への距離の方が遠いのでそっちに進む
-		if (dx < 0) { return Left; } // 左
-		else { return Right; } // 右
+		int dx, dy;
+		dx = this->target_pos.x - this->position.x;
+		dy = this->target_pos.y - this->position.y;
+
+		if (abs(dx) > abs(dy))
+		{
+			// X方向への距離の方が遠いのでそっちに進む
+			if (dx < 0) { return Left; } // 左
+			else { return Right; } // 右
+		}
+		else
+		{
+			// Y方向へ進む
+			if (dy < 0) { return Up; } // 上
+			else { return Down; } // 下
+		}
 	}
 	else
 	{
-		// Y方向へ進む
-		if (dy < 0) { return Up; } // 上
-		else { return Down; } // 下
+		int GotoDirection = Left;
+		switch (this->move_direction)
+		{
+		case Left:
+			if (this->map->IsPassable(ex - 1, ey))
+			{
+				GotoDirection = Left;
+				break;
+			}
+			if (this->map->IsPassable(ex, ey + 1))
+			{
+				GotoDirection = Down;
+				break;
+			}
+			if (this->map->IsPassable(ex, ey - 1))
+			{
+				GotoDirection = Up;
+				break;
+			}
+
+
+		case Right:
+			if (this->map->IsPassable(ex + 1, ey))
+			{
+				GotoDirection = Right;
+				break;
+			}
+			if (this->map->IsPassable(ex, ey - 1))
+			{
+				GotoDirection = Up;
+				break;
+			}
+			if (this->map->IsPassable(ex, ey + 1))
+			{
+				GotoDirection = Down;
+				break;
+			}
+
+
+		case Up:
+			if (this->map->IsPassable(ex + 1, ey))
+			{
+				GotoDirection = Right;
+				break;
+			}
+			if (this->map->IsPassable(ex, ey - 1))
+			{
+				GotoDirection = Up;
+				break;
+			}
+			if (this->map->IsPassable(ex - 1, ey))
+			{
+				GotoDirection = Left;
+				break;
+			}
+
+
+		case Down:
+			if (this->map->IsPassable(ex - 1, ey))
+			{
+				GotoDirection = Left;
+				break;
+			}
+			if (this->map->IsPassable(ex, ey + 1))
+			{
+				GotoDirection = Down;
+				break;
+			}
+			if (this->map->IsPassable(ex + 1, ey))
+			{
+				GotoDirection = Right;
+				break;
+			}
+		}
+		return GotoDirection;
 	}
+}
+
+int Enemy::CloggedMovingDirection(std::vector<Enemy>& enemy, int num)
+{
+	int ex = static_cast<int>(this->position.x);
+	int ey = static_cast<int>(this->position.y);
+
+	int GotoMovingDirection = this->move_direction;;
+
+	for (int i = 0; i < enemy.size(); i++)
+	{
+		if (i != num)
+		{
+			int tx = static_cast<int>(enemy[i].GetPosition().x);
+			int ty = static_cast<int>(enemy[i].GetPosition().y);
+
+			if (tx == ex - 1)	// Left
+			{
+				GotoMovingDirection = Down;
+				break;
+			}
+			if (tx == ex + 1)	// Right
+			{
+				GotoMovingDirection = Up;
+				break;
+			}
+			if (ty == ey - 1)
+			{
+				GotoMovingDirection = Left;
+				break;
+			}
+			if (ty == ey + 1)
+			{
+				GotoMovingDirection = Right;
+				break;
+			}
+		}
+	}
+
+	return GotoMovingDirection;
 }
 
 
@@ -66,34 +197,50 @@ bool Enemy::Update(std::vector<Enemy>& enemy, int num)
 		this->velocity = { 0,0 };
 
 		float vel = (1.0f);
-		switch (this->move_direction)
+
 		{
-		case Left:
-			this->velocity.x = (-vel);
-			this->velocity.y = (0.0f);
-			break;
+			switch (this->move_direction)
+			{
+			case Left:
+				this->velocity.x = (-vel);
+				this->velocity.y = (0.0f);
+				break;
 
-		case Right:
-			this->velocity.x = (vel);
-			this->velocity.y = (0.0f);
-			break;
+			case Right:
+				this->velocity.x = (vel);
+				this->velocity.y = (0.0f);
+				break;
 
-		case Up:
-			this->velocity.x = (0.0f);
-			this->velocity.y = (-vel);
-			break;
+			case Up:
+				this->velocity.x = (0.0f);
+				this->velocity.y = (-vel);
+				break;
 
-		case Down:
-			this->velocity.x = (0.0f);
-			this->velocity.y = (vel);
-			break;
+			case Down:
+				this->velocity.x = (0.0f);
+				this->velocity.y = (vel);
+				break;
+			}
+
+			this->x_now = static_cast<int>(this->position.x);
+			this->y_now = static_cast<int>(this->position.y);
+			this->x_passable = this->x_now + static_cast<int>(this->velocity.x);
+			this->y_passable = this->y_now + static_cast<int>(this->velocity.y);
+
+			for (int i = 0; i < enemy.size(); i++)
+			{
+				if (i != num)
+				{
+					int ex = static_cast<int>(enemy[i].GetPosition().x);
+					int ey = static_cast<int>(enemy[i].GetPosition().y);
+					if ((ex == this->x_passable) && (ey == this->y_passable))
+					{
+						this->move_direction = this->CloggedMovingDirection(enemy, num);
+						break;
+					}
+				}
+			}
 		}
-
-		this->x_now = static_cast<int>(this->position.x);
-		this->y_now = static_cast<int>(this->position.y);
-		this->x_passable = this->x_now + static_cast<int>(this->velocity.x);
-		this->y_passable = this->y_now + static_cast<int>(this->velocity.y);
-
 		if (FloatEquals(this->velocity.x, 0.0f) == false || FloatEquals(this->velocity.y, 0.0f) == false)
 		{
 			this->move_count = MOVING_INTERVAL;
@@ -233,9 +380,14 @@ void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 
 void Enemy::Damage(int damage)
 {
-	this->now_hp = this->now_hp - damage;
+	int Damage = damage;
+	if (Damage <= 0)
+	{
+		Damage = 0;
+	}
+	this->now_hp = this->now_hp - Damage;
 	MessageWindow& msg = MessageWindow::singleton();
-	msg.SetMessage(COLOR_WHITE, "%s に %d のダメージ！", this->name, damage);
+	msg.SetMessage(COLOR_WHITE, "%s に %d のダメージ！", this->name, Damage);
 
 	if (this->now_hp <= 0)
 	{
@@ -247,3 +399,9 @@ Vector2 Enemy::Attack()
 {
 	return Vector2();
 }
+
+int Enemy::GetExp()
+{
+	return this->exp;
+}
+

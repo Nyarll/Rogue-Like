@@ -26,6 +26,8 @@ private:
 
 	int font;
 
+	int Exp;	// 累計獲得経験値
+
 public:
 	Player();
 	~Player();
@@ -38,9 +40,12 @@ public:
 
 	void Render(const Vector2& screen_position, const int grid_size)override;
 	void DrawPlayerStatus();
-
+	void DrawPlayerExp();
 
 	int GetMoveCount()const;
+
+	int GetExp();
+	void AddExp(int exp);
 
 	void LevelUp();								// レベルアップ
 	Vector2 Attack()override;

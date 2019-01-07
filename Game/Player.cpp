@@ -21,6 +21,7 @@ Player::Player()
 	this->direction = 1;
 
 	this->level = 1;
+	this->Exp = 0;
 
 	this->gh = LoadGraph("Resources/Textures/Characters_32_48.png");
 	this->animation_cnt = 0;
@@ -366,4 +367,21 @@ void Player::Healing()
 	{
 		this->now_hp = this->max_hp;
 	}
+}
+
+int Player::GetExp()
+{
+	return this->Exp;
+}
+
+void Player::AddExp(int exp)
+{
+	this->Exp += exp;
+}
+
+void Player::DrawPlayerExp()
+{
+	SetDrawBright(255, 255, 255);
+	DrawFormatStringFToHandle(3, SCREEN_BOTTOM - 32 + 3, COLOR_BLACK, this->font, "EXP : %d", this->Exp);
+	DrawFormatStringFToHandle(0, SCREEN_BOTTOM - 32, COLOR_AQUA, this->font, "EXP : %d", this->Exp);
 }
