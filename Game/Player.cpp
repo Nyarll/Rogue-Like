@@ -52,7 +52,7 @@ int Player::GetLevel()
 	return this->level;
 }
 
-bool Player::Update()
+bool Player::Update(std::vector<Enemy> enemy)
 {
 	static bool act_flag = false;
 	if (this->alive)
@@ -96,15 +96,52 @@ bool Player::Update()
 				this->step_count += 1;
 			}
 
-			if (FloatEquals(this->velocity.x, 0.0f) == false || FloatEquals(this->velocity.y, 0.0f) == false)
-			{
-				this->move_count = MOVING_INTERVAL;
-			}
-
 			this->x_now = static_cast<int>(this->position.x);
 			this->y_now = static_cast<int>(this->position.y);
 			this->x_passable = static_cast<int>(this->position.x + this->velocity.x);
 			this->y_passable = static_cast<int>(this->position.y + this->velocity.y);
+
+			if (FloatEquals(this->velocity.x, 0.0f) == false || FloatEquals(this->velocity.y, 0.0f) == false)
+			{
+				this->move_count = MOVING_INTERVAL;
+				this->render_position = this->position;
+				// 行きたい方向へ行けるかどうかチェック
+				for (int i = 0; i < enemy.size(); i++)
+				{
+					int ex = static_cast<int>(enemy[i].GetPosition().x);
+					int ey = static_cast<int>(enemy[i].GetPosition().y);
+					if ((ex == this->x_passable) && (ey == this->y_passable))
+					{
+						this->velocity.x = 0;
+						this->velocity.y = 0;
+						break;
+					}
+				}
+
+				if (this->map->IsPassable(x_passable, y_passable))
+				{
+					if ((this->map->IsPassable(this->x_passable, this->y_now)))
+					{
+						this->position.x += this->velocity.x;
+					}
+					if ((this->map->IsPassable(this->x_now, this->y_passable)))
+					{
+						this->position.y += this->velocity.y;
+					}
+				}
+				else
+				{
+					if ((this->map->IsPassable(this->x_passable, this->y_now)))
+					{
+						this->position.x += this->velocity.x;
+					}
+					if ((this->map->IsPassable(this->x_now, this->y_passable)))
+					{
+						this->position.y += this->velocity.y;
+					}
+				}
+				act_flag = true;
+			}
 
 			if (this->step_count > 5)
 			{
@@ -112,60 +149,9 @@ bool Player::Update()
 				this->step_count = 0;
 			}
 		}
-
-		if (this->move_count > 0)
+		else
 		{
-			this->move_count--;
-
-			// 行きたい方向へ行けるかどうかチェック
-			if (this->velocity.x != 0 && this->velocity.y != 0)
-			{
-				if (this->map->IsPassable(x_passable, y_passable))
-				{
-					if ((this->map->IsPassable(this->x_passable, this->y_now)))
-					{
-						if (!act_flag)
-						{
-							act_flag = true;
-						}
-						this->position.x += this->velocity.x / (MOVING_INTERVAL);
-
-					}
-					if ((this->map->IsPassable(this->x_now, this->y_passable)))
-					{
-						if (!act_flag)
-						{
-							act_flag = true;
-						}
-						this->position.y += this->velocity.y / (MOVING_INTERVAL);
-					}
-				}
-			}
-			else
-			{
-				if ((this->map->IsPassable(this->x_passable, this->y_now)))
-				{
-					this->position.x += this->velocity.x / (MOVING_INTERVAL);
-					if (!act_flag)
-					{
-						act_flag = true;
-					}
-				}
-				if ((this->map->IsPassable(this->x_now, this->y_passable)))
-				{
-					this->position.y += this->velocity.y / (MOVING_INTERVAL);
-					if (!act_flag)
-					{
-						act_flag = true;
-					}
-				}
-			}
-
-			if (this->move_count == 0)
-			{
-				this->position.x = static_cast<float>(static_cast<int>(this->position.x));
-				this->position.y = static_cast<float>(static_cast<int>(this->position.y));
-			}
+			act_flag = false;
 		}
 
 		// ワールドから出ないようにしておく
@@ -196,15 +182,55 @@ void Player::Render(const Vector2& screen_position, const int grid_size)
 	// デバッグ用
 	bool debug_mode = false;
 
+	if (this->move_count > 0)
+	{
+		this->move_count--;
+
+		if (this->velocity.x != 0 && this->velocity.y != 0)
+		{
+			if (this->map->IsPassable(x_passable, y_passable))
+			{
+				if ((this->map->IsPassable(this->x_passable, this->y_now)))
+				{
+					this->render_position.x += this->velocity.x / (MOVING_INTERVAL);
+
+				}
+				if ((this->map->IsPassable(this->x_now, this->y_passable)))
+				{
+					this->render_position.y += this->velocity.y / (MOVING_INTERVAL);
+				}
+			}
+		}
+		else
+		{
+			if ((this->map->IsPassable(this->x_passable, this->y_now)))
+			{
+				this->render_position.x += this->velocity.x / (MOVING_INTERVAL);
+			}
+			if ((this->map->IsPassable(this->x_now, this->y_passable)))
+			{
+				this->render_position.y += this->velocity.y / (MOVING_INTERVAL);
+			}
+		}
+
+		if (this->move_count == 0)
+		{
+			this->render_position.x = static_cast<float>(static_cast<int>(this->render_position.x));
+			this->render_position.y = static_cast<float>(static_cast<int>(this->render_position.y));
+
+			//this->render_position = this->position;
+		}
+	}
+
 	if (this->alive)
 	{
 		if (debug_mode)
 		{
-			int x = static_cast<int>(((this->position.x + 0.5f) * grid_size) - screen_position.x);
-			int y = static_cast<int>(((this->position.y + 0.5f) * grid_size) - screen_position.y);
+			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
+			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
 
-			int x1 = static_cast<int>(((this->position.x) * grid_size) - screen_position.x);
-			int y1 = static_cast<int>(((this->position.y) * grid_size) - screen_position.y);
+			int x1 = static_cast<int>(((this->render_position.x) * grid_size) - screen_position.x);
+			int y1 = static_cast<int>(((this->render_position.y) * grid_size) - screen_position.y);
 			int x2 = x1 + grid_size;
 			int y2 = y1 + grid_size;
 			DrawBox(x1, y1, x2, y2, COLOR_AQUA, true);
@@ -214,8 +240,8 @@ void Player::Render(const Vector2& screen_position, const int grid_size)
 		}
 		else
 		{
-			int x = static_cast<int>(((this->position.x + 0.5f) * grid_size) - screen_position.x);
-			int y = static_cast<int>(((this->position.y + 0.5f) * grid_size) - screen_position.y);
+			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
+			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
 
 			int x1 = static_cast<int>(((this->position.x) * grid_size) - screen_position.x);
 			int y1 = static_cast<int>(((this->position.y) * grid_size) - screen_position.y);
@@ -241,11 +267,11 @@ void Player::Render(const Vector2& screen_position, const int grid_size)
 	}
 	else
 	{
-		int x = static_cast<int>(((this->position.x + 0.5f) * grid_size) - screen_position.x);
-		int y = static_cast<int>(((this->position.y + 0.5f) * grid_size) - screen_position.y);
+		int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
+		int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
 
-		int x1 = static_cast<int>(((this->position.x) * grid_size) - screen_position.x);
-		int y1 = static_cast<int>(((this->position.y) * grid_size) - screen_position.y);
+		int x1 = static_cast<int>(((this->render_position.x) * grid_size) - screen_position.x);
+		int y1 = static_cast<int>(((this->render_position.y) * grid_size) - screen_position.y);
 		int x2 = x1 + grid_size;
 		int y2 = y1 + grid_size;
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);

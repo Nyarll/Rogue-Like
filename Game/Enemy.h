@@ -35,7 +35,6 @@ public:
 
 	int GetMovingDirection();
 
-	bool Update()override { return false; };
 	bool Update(std::vector<Enemy>& enemy, int num);
 
 	void Render(const Vector2& screen_position, const int grid_size)override;

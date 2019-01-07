@@ -200,10 +200,21 @@ bool ScenePlay::ChangeMap()
 void ScenePlay::GotoNextFloor(const Vector2 & playerPosition)
 {
 	MessageWindow& msg = MessageWindow::singleton();
+
+	static bool flag = false;
+
 	if (this->map->GetCellid(static_cast<int>(playerPosition.x), static_cast<int>(playerPosition.y)) == 2)
 	{
 		this->change_flag = true;
-		msg.SetMessage(COLOR_WHITE, "下の階層へ...");
+		if (!flag)
+		{
+			msg.SetMessage(COLOR_WHITE, "下の階層へ...");
+			flag = true;
+		}
+	}
+	else
+	{
+		flag = false;
 	}
 }
 
@@ -253,90 +264,49 @@ void ScenePlay::Update(void)
 		{
 		case Wait:
 		{
-			this->act = PlayerTurnBegin;
+			this->act = PlayerTurn;
 		}
 		me.SetMessage(0xffff00ff, "Debug Log : Wait Sequence");
 		break;
 
-		case PlayerTurnBegin:
+		case PlayerTurn:
 		{
 			if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
 			{
 				player->Attack();
-				this->act = EnemyTurnBegin;
+				this->act = EnemyTurn;
 			}
-			if (this->player->Update())
+			if (this->player->Update(this->enemy))
 			{
-				me.SetMessage(0xffffff00, "Debug Log : PlayerTurnBegin Sequence");
-				this->act = PlayerTurnNow;
+				me.SetMessage(0xffffff00, "Debug Log : PlayerTurn Sequence");
+				this->act = EnemyTurn;
 			}
-		}
-		break;
-		case PlayerTurnNow:
-		{
-			this->player->Update();
-			if (this->player->CheckTurnEnd())
-			{
-				this->act = PlayerTurnEnd;
-				me.SetMessage(0xffffff00, "Debug Log : PlayerTurnNow Sequence");
-				this->player->SetTurnEndFlag();
-			}
-		}
-		break;
-		case PlayerTurnEnd:
-		{
-			this->player->Update();
-			this->act = EnemyTurnBegin;
-			me.SetMessage(0xffffff00, "Debug Log : PlayerTurnEnd Sequence");
 		}
 		break;
 
-		case EnemyTurnBegin:
+		case EnemyTurn:
+		{
 			// すべてのエネミーにプレイヤーの座標を登録
 			for (int i = 0; i < this->enemy.size(); i++)
 			{
 				this->enemy[i].SetTargetPosition(this->player->GetPosition());
 			}
-			this->act = EnemyTurnNow;
-			me.SetMessage(0xffff00ff, "Debug Log : EnemyTurnBegin Sequence");
-			break;
-
-		case EnemyTurnNow:
-		{
-			int end_cnt = 0;
 			for (int i = 0; i < this->enemy.size(); i++)
 			{
 				this->enemy[i].Update(this->enemy, i);
-				if (this->enemy[i].CheckTurnEnd())
-				{
-					end_cnt++;
-				}
-				if (end_cnt == enemy.size())	// すべてのエネミーObject行動完了したらエンドシークエンスへ
-				{
-					this->act = EnemyTurnEnd;
-					me.SetMessage(0xffff00ff, "Debug Log : EnemyTurnNow Sequence");
-					for (int k = 0; k < this->enemy.size(); k++)
-					{
-						this->enemy[k].SetTurnEndFlag();
-					}
-				}
 			}
+			this->act = TurnEnd;
+			me.SetMessage(0xffff00ff, "Debug Log : EnemyTurn Sequence");
 		}
 		break;
 
-		case EnemyTurnEnd:
-			/*for (int i = 0; i < this->enemy.size(); i++)
-			{
-				this->enemy[i].Update();
-			}*/
-			this->act = TurnEnd;
-			me.SetMessage(0xffff00ff, "Debug Log : EnemyTurnEnd Sequence");
-			break;
-
 		case TurnEnd:	// 全シークエンス終了
+		{
 			this->act = Wait;
 			me.SetMessage(0xffff00ff, "Debug Log : TurnEnd Sequence");
-			break;
+		}
+		break;
+
 		}
 	}
 	else
@@ -344,13 +314,6 @@ void ScenePlay::Update(void)
 		if (this->ChangeMap())	// マップチェンジ
 		{
 			this->change_flag = false;
-		}
-	}
-	//if (input.key->GetInput())
-	{
-		if (this->player->GetMoveCount() == 0)
-		{
-
 		}
 	}
 
@@ -400,7 +363,7 @@ void ScenePlay::Update(void)
 
 void ScenePlay::Render(void)
 {
-	Vector2 player_pos = this->player->GetPosition();
+	Vector2 player_pos = this->player->GetRenderPosition();
 
 	Vector2 screen_pos;
 	screen_pos.x = (player_pos.x * Map::GRID_SIZE) - SCREEN_WIDTH / 2;

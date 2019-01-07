@@ -15,6 +15,7 @@ void Actor::ChangeMap(Map* map, int start_x, int start_y)
 {
 	this->map = map;
 	this->position = { (float)(start_x),(float)(start_y) };
+	this->render_position = this->position;
 }
 
 bool Actor::GetAlive()
@@ -35,6 +36,11 @@ void Actor::SetName(char* name)
 Vector2 Actor::GetPosition() const
 {
 	return this->position;
+}
+
+Vector2 Actor::GetRenderPosition() const
+{
+	return this->render_position;
 }
 
 void Actor::SetPositon(int x, int y)

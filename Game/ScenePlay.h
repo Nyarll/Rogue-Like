@@ -11,13 +11,9 @@ typedef enum
 {
 	Wait, // キー入力待ち。もしくは待機中
 
-	PlayerTurnBegin,
-	PlayerTurnNow,
-	PlayerTurnEnd,
+	PlayerTurn,
 
-	EnemyTurnBegin,
-	EnemyTurnNow,
-	EnemyTurnEnd,
+	EnemyTurn,
 
 	TurnEnd,   // ターン終了
 }Action;

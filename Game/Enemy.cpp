@@ -1,6 +1,8 @@
 #include "Enemy.h"
 #include "Map.h"
 
+#include "MessageWindow.h"
+
 const std::vector<std::string> Enemy::EnemyNameList =
 {
 	"スライム",
@@ -48,11 +50,6 @@ bool Enemy::Update(std::vector<Enemy>& enemy, int num)
 {
 	static bool act_flag = false;
 
-	if (this->move_count == 1)
-	{
-		this->end_flag = true;
-	}
-
 	if (this->move_count == 0)
 	{
 		act_flag = false;
@@ -83,72 +80,55 @@ bool Enemy::Update(std::vector<Enemy>& enemy, int num)
 			this->velocity.y = (vel);
 			break;
 		}
-		if (FloatEquals(this->velocity.x, 0.0f) == false || FloatEquals(this->velocity.y, 0.0f) == false)
-		{
-			this->move_count = MOVING_INTERVAL;
-		}
-		else
-		{
-			this->end_flag = true;
-		}
 
 		this->x_now = static_cast<int>(this->position.x);
 		this->y_now = static_cast<int>(this->position.y);
 		this->x_passable = this->x_now + static_cast<int>(this->velocity.x);
 		this->y_passable = this->y_now + static_cast<int>(this->velocity.y);
+
+		if (FloatEquals(this->velocity.x, 0.0f) == false || FloatEquals(this->velocity.y, 0.0f) == false)
+		{
+			this->move_count = MOVING_INTERVAL;
+			// 行きたい方向へ行けるかどうかチェック
+			if ((static_cast<int>(this->target_pos.x) == this->x_passable) &&
+				(static_cast<int>(this->target_pos.y) == this->y_passable))
+			{
+				this->velocity.x = 0;
+				this->velocity.y = 0;
+			}
+			for (int i = 0; i < enemy.size(); i++)
+			{
+				if (i != num)
+				{
+					int ex = static_cast<int>(enemy[i].GetPosition().x);
+					int ey = static_cast<int>(enemy[i].GetPosition().y);
+					if ((ex == this->x_passable) && (ey == this->y_passable))
+					{
+						this->velocity.x = 0;
+						this->velocity.y = 0;
+						break;
+					}
+				}
+			}
+			{
+				if (this->map->IsPassable(x_passable, y_passable))
+				{
+					if ((static_cast<int>(this->target_pos.x) != x_passable))
+					{
+						this->position.x += this->velocity.x;
+					}
+					if ((static_cast<int>(this->target_pos.y) != y_passable))
+					{
+						this->position.y += this->velocity.y;
+					}
+				}
+			}
+			act_flag = true;
+		}
 	}
-
-	if (this->move_count > 0)
+	else
 	{
-		this->move_count--;
-		// 行きたい方向へ行けるかどうかチェック
-		if ((static_cast<int>(this->target_pos.x) == x_passable) && (static_cast<int>(this->target_pos.y) == y_passable))
-		{
-			this->velocity.x = 0;
-			this->velocity.y = 0;
-		}
-		for (int i = 0; i < enemy.size(); i++)
-		{
-			if (i != num)
-			{
-				int ex = static_cast<int>(enemy[i].GetPosition().x);
-				int ey = static_cast<int>(enemy[i].GetPosition().y);
-				if ((ex == x_passable) && (ey == y_passable))
-				{
-					this->velocity.x = 0;
-					this->velocity.y = 0;
-					break;
-				}
-			}
-		}
-
-		{
-			if (this->map->IsPassable(x_passable, y_passable))
-			{
-				if ((static_cast<int>(this->target_pos.x) != x_passable))
-				{
-					this->position.x += this->velocity.x / (MOVING_INTERVAL);
-					if (!act_flag)
-					{
-						act_flag = true;
-					}
-				}
-				if ((static_cast<int>(this->target_pos.y) != y_passable))
-				{
-					this->position.y += this->velocity.y / (MOVING_INTERVAL);
-					if (!act_flag)
-					{
-						act_flag = true;
-					}
-				}
-			}
-		}
-
-		if (this->move_count == 0)
-		{
-			this->position.x = static_cast<float>(static_cast<int>(this->position.x));
-			this->position.y = static_cast<float>(static_cast<int>(this->position.y));
-		}
+		act_flag = false;
 	}
 
 	// ワールドから出ないようにしておく
@@ -173,18 +153,54 @@ bool Enemy::Update(std::vector<Enemy>& enemy, int num)
 	return act_flag;
 }
 
-
 void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 {
 	// デバッグ用
 	bool debug_mode = true;
 
+	if (this->move_count > 0)
+	{
+		this->move_count--;
+		if (this->velocity.x != 0 && this->velocity.y != 0)
+		{
+			if (this->map->IsPassable(x_passable, y_passable))
+			{
+				if ((this->map->IsPassable(this->x_passable, this->y_now)))
+				{
+					this->render_position.x += this->velocity.x / (MOVING_INTERVAL);
+
+				}
+				if ((this->map->IsPassable(this->x_now, this->y_passable)))
+				{
+					this->render_position.y += this->velocity.y / (MOVING_INTERVAL);
+				}
+			}
+		}
+		else
+		{
+			if ((this->map->IsPassable(this->x_passable, this->y_now)))
+			{
+				this->render_position.x += this->velocity.x / (MOVING_INTERVAL);
+			}
+			if ((this->map->IsPassable(this->x_now, this->y_passable)))
+			{
+				this->render_position.y += this->velocity.y / (MOVING_INTERVAL);
+			}
+		}
+
+		if (this->move_count == 0)
+		{
+			this->render_position.x = static_cast<float>(static_cast<int>(this->render_position.x));
+			this->render_position.y = static_cast<float>(static_cast<int>(this->render_position.y));
+		}
+	}
+
 	if (this->alive)
 	{
 		if (debug_mode)
 		{
-			int x = static_cast<int>(((this->position.x + 0.5f) * grid_size) - screen_position.x);
-			int y = static_cast<int>(((this->position.y + 0.5f) * grid_size) - screen_position.y);
+			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
+			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
 
 			int x1 = static_cast<int>(((this->position.x) * grid_size) - screen_position.x);
 			int y1 = static_cast<int>(((this->position.y) * grid_size) - screen_position.y);
@@ -216,11 +232,11 @@ void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 		}
 		else
 		{
-			int x = static_cast<int>(((this->position.x + 0.5f) * grid_size) - screen_position.x);
-			int y = static_cast<int>(((this->position.y + 0.5f) * grid_size) - screen_position.y);
+			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
+			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
 
-			int x1 = static_cast<int>(((this->position.x) * grid_size) - screen_position.x);
-			int y1 = static_cast<int>(((this->position.y) * grid_size) - screen_position.y);
+			int x1 = static_cast<int>(((this->render_position.x) * grid_size) - screen_position.x);
+			int y1 = static_cast<int>(((this->render_position.y) * grid_size) - screen_position.y);
 			int x2 = x1 + grid_size;
 			int y2 = y1 + grid_size;
 

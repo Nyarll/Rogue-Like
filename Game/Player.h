@@ -2,6 +2,7 @@
 #include "Vector.h"
 #include "Define.h"
 #include "Actor.h"
+#include "Enemy.h"
 
 class Map;
 
@@ -33,12 +34,12 @@ public:
 
 	int GetLevel();
 
-	bool Update()override;
+	bool Update(std::vector<Enemy> enemy);
 
 	void Render(const Vector2& screen_position, const int grid_size)override;
 	void DrawPlayerStatus();
 
-	
+
 	int GetMoveCount()const;
 
 	void LevelUp();								// レベルアップ
@@ -46,5 +47,5 @@ public:
 
 	void Healing();							// 回復(何歩か歩くと１回復するやつ)
 
-	
+
 };

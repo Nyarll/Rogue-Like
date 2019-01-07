@@ -16,6 +16,7 @@ protected:
 	bool alive = true;
 
 	Vector2 position;
+	Vector2 render_position;
 	Vector2 velocity;
 
 	int move_count;
@@ -46,9 +47,9 @@ public:
 	void SetName(char* name);		// 名前のセット
 
 	Vector2 GetPosition()const;
+	Vector2 GetRenderPosition()const;
 	void SetPositon(int x, int y);
 
-	virtual bool Update() = 0;
 	bool CheckTurnEnd();
 	void SetTurnEndFlag();
 
