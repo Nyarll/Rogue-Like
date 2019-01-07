@@ -269,7 +269,7 @@ void ScenePlay::Update(void)
 
 			this->act = PlayerTurn;
 		}
-		me.SetMessage(0xffff00ff, "Debug Log : Wait Sequence");
+		//me.SetMessage(0xffff00ff, "Debug Log : Wait Sequence");
 		break;
 
 		case PlayerTurn:
@@ -281,7 +281,7 @@ void ScenePlay::Update(void)
 			}
 			if (this->player->Update(this->enemy))
 			{
-				me.SetMessage(0xffffff00, "Debug Log : PlayerTurn Sequence");
+				//me.SetMessage(0xffffff00, "Debug Log : PlayerTurn Sequence");
 				this->act = EnemyTurn;
 			}
 		}
@@ -298,7 +298,7 @@ void ScenePlay::Update(void)
 					if (this->enemy[i].GetPosition() == this->playerAttackPoint)
 					{
 						this->enemy[i].Damage(this->player->AttackDamage(this->enemy[i].GetDEF()));
-						if (enemy[i].GetAlive())
+						if (!enemy[i].GetAlive())
 						{
 							me.SetMessage(COLOR_YELLOW, "%s は プレイヤーに倒された", enemy[i].GetName());
 							this->enemy.erase(this->enemy.begin() + i);
@@ -317,14 +317,14 @@ void ScenePlay::Update(void)
 				this->enemy[i].Update(this->enemy, i);
 			}
 			this->act = TurnEnd;
-			me.SetMessage(0xffff00ff, "Debug Log : EnemyTurn Sequence");
+			//me.SetMessage(0xffff00ff, "Debug Log : EnemyTurn Sequence");
 		}
 		break;
 
 		case TurnEnd:	// 全シークエンス終了
 		{
 			this->act = Wait;
-			me.SetMessage(0xffff00ff, "Debug Log : TurnEnd Sequence");
+			//me.SetMessage(0xffff00ff, "Debug Log : TurnEnd Sequence");
 		}
 		break;
 
