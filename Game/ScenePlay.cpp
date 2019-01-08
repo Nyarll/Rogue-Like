@@ -310,6 +310,7 @@ void ScenePlay::GameAction()
 			static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
 		{
 			msg.SetMessage(COLOR_AQUA, "%s ‚ðE‚Á‚½", this->item[i].GetItemName());
+			this->player->GettingItem(this->item[i]);
 			this->item.erase(this->item.begin() + i);
 			break;
 		}

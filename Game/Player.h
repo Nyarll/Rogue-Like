@@ -3,6 +3,7 @@
 #include "Define.h"
 #include "Actor.h"
 #include "Enemy.h"
+#include "Item.h"
 
 class Map;
 
@@ -29,6 +30,8 @@ private:
 	int Exp;	// —ÝŒvŠl“¾ŒoŒ±’l
 	int next_exp;
 
+	std::vector<Item> inventory;
+
 public:
 	Player();
 	~Player();
@@ -54,5 +57,5 @@ public:
 
 	void Healing();							// ‰ñ•œ(‰½•à‚©•à‚­‚Æ‚P‰ñ•œ‚·‚é‚â‚Â)
 
-
+	void GettingItem(const Item& item);
 };

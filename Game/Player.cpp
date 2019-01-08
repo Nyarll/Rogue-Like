@@ -397,3 +397,8 @@ void Player::DrawPlayerExp()
 	DrawFormatStringFToHandle(3, SCREEN_BOTTOM - 32 + 3, COLOR_BLACK, this->font, "EXP : %d", this->Exp);
 	DrawFormatStringFToHandle(0, SCREEN_BOTTOM - 32, COLOR_AQUA, this->font, "EXP : %d", this->Exp);
 }
+
+void Player::GettingItem(const Item & item)
+{
+	this->inventory.push_back(item);
+}
