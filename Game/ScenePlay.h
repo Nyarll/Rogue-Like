@@ -62,6 +62,8 @@ private:
 	bool action_flag = false;
 	bool action_flag_old = false;
 
+	bool menu_flag = false;
+
 private:
 	// マップ関連
 	void InitDungeons();

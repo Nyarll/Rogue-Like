@@ -296,6 +296,17 @@ void ScenePlay::GameFunction()
 			this->render_msg = false;
 		}
 	}
+	if (input.key->GetDown(KEY_INPUT_X))
+	{
+		if (!this->menu_flag)
+		{
+			this->menu_flag = true;
+		}
+		else
+		{
+			this->menu_flag = false;
+		}
+	}
 }
 void ScenePlay::GameAction()
 {
@@ -309,9 +320,16 @@ void ScenePlay::GameAction()
 		if (static_cast<int>(p_pos.x) == this->item[i].GetPosition().x &&
 			static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
 		{
-			msg.SetMessage(COLOR_AQUA, "%s ‚ðE‚Á‚½", this->item[i].GetItemName());
-			this->player->GettingItem(this->item[i]);
-			this->item.erase(this->item.begin() + i);
+			if (this->player->GetInventoryInItemNum() == Player::MAX_ITEM_INVENTORY)
+			{
+				msg.SetMessage(COLOR_RED, "ƒCƒ“ƒxƒ“ƒgƒŠ‚ª‚¢‚Á‚Ï‚¢‚Å‚·I");
+			}
+			else
+			{
+				msg.SetMessage(COLOR_AQUA, "%s ‚ðE‚Á‚½", this->item[i].GetItemName());
+				this->player->GettingItem(this->item[i]);
+				this->item.erase(this->item.begin() + i);
+			}
 			break;
 		}
 	}
@@ -445,7 +463,14 @@ void ScenePlay::Update(void)
 	this->GameAction();
 	this->GameFunction();
 
-	this->GameTurnSequence();
+	if (!this->menu_flag)
+	{
+		this->GameTurnSequence();
+	}
+	else
+	{
+
+	}
 
 	if (this->player->GetAlive() == false)
 	{
@@ -551,4 +576,9 @@ void ScenePlay::Render(void)
 		this->player->DrawPlayerExp();
 	}
 	this->RenderOtherUI();
+
+	if (this->menu_flag)
+	{
+		DrawBox(0, 0, 200, 200, COLOR_RED, true);
+	}
 }

@@ -7,6 +7,8 @@ const int Player::MOVING_INTERVAL = 16;
 const int Player::GRAPH_SIZE_X = 32;
 const int Player::GRAPH_SIZE_Y = 48;
 
+const int Player::MAX_ITEM_INVENTORY = 32;
+
 Player::Player()
 {
 	this->map = nullptr;
@@ -401,4 +403,9 @@ void Player::DrawPlayerExp()
 void Player::GettingItem(const Item & item)
 {
 	this->inventory.push_back(item);
+}
+
+int Player::GetInventoryInItemNum()
+{
+	return this->inventory.size();
 }

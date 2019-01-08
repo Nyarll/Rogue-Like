@@ -14,6 +14,8 @@ public:
 	static const int GRAPH_SIZE_X;
 	static const int GRAPH_SIZE_Y;
 
+	static const int MAX_ITEM_INVENTORY;
+
 private:
 
 	int level;
@@ -58,4 +60,5 @@ public:
 	void Healing();							// ‰ñ•œ(‰½•à‚©•à‚­‚Æ‚P‰ñ•œ‚·‚é‚â‚Â)
 
 	void GettingItem(const Item& item);
+	int GetInventoryInItemNum();
 };
