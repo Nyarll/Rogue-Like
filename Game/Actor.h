@@ -48,6 +48,9 @@ protected:
 	int Dice(int num, int side);
 
 public:
+	Actor() {};
+	~Actor() {};
+
 	void ChangeMap(Map* map, int start_x, int start_y);
 
 	bool GetAlive();

@@ -3,28 +3,13 @@
 
 #include "MessageWindow.h"
 
-Enemy::Enemy(int player_level)
+Enemy::Enemy(int player_level, int now_floor)
 {
 	this->move_count = 0;
 	this->direction = rand() % DirectionNum;
 	this->move_direction = this->direction;
 
-	this->max_hp = this->Dice(3 + (player_level - 1), 6) + this->Dice(2, 4);
-	this->now_hp = this->max_hp;
-
-	this->exp = this->max_hp + Dice(player_level, 6);
-
-	this->type = rand() % TypeNum;
-
-	switch (this->type)
-	{
-	case Slime:
-		this->gh = LoadGraph("Resources/Textures/Slime.png");
-		this->name = "Slime";
-		break;
-	}
-	this->ATK = this->Dice(2, 6);
-	this->DEF = this->Dice(2, 6);
+	this->UpdateStatus(player_level, now_floor);
 }
 
 
@@ -314,9 +299,6 @@ bool Enemy::Update(std::vector<Enemy>& enemy, int num)
 
 void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 {
-	// デバッグ用
-	bool debug_mode = false;
-
 	if (this->move_count > 0)
 	{
 		this->move_count--;
@@ -327,7 +309,7 @@ void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 
 	if (this->alive)
 	{
-		if (debug_mode)
+		if (this->type == TypeNull)
 		{
 			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
 			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
@@ -409,3 +391,11 @@ int Enemy::GetExp()
 	return this->exp;
 }
 
+void Enemy::UpdateStatus(int player_level, int now_floor)
+{
+	this->max_hp = this->Dice(3 + (player_level), 6) + this->Dice(1 + now_floor, 4) + (player_level);
+	this->now_hp = this->max_hp;
+	this->ATK = this->Dice(2 + (player_level), 6) + (player_level) + this->Dice(now_floor, 3);
+	this->DEF = this->Dice(2 + (player_level), 6) + (player_level) + this->Dice(now_floor, 3);
+	this->exp = this->max_hp / 2 + Dice(player_level, 6);
+}

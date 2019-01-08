@@ -129,7 +129,20 @@ void ScenePlay::InitDungeons()
 	}
 	for (int i = NumObject - NumMobs; i < NumObject - 2; i++)
 	{
-		Enemy enemy(this->player->GetLevel());
+		Enemy enemy;
+
+		int type = rand() % TypeNum;
+
+		switch (type)
+		{
+		case Slime:
+		{
+			ObjectSlime slime(this->player->GetLevel(), this->dng_floor);
+			enemy = slime;
+		}
+		break;
+		}
+
 		init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x) - 1,
 			static_cast<float>(this->map->map_->GetInitMobPosition(i).y) - 1 };
 		if (!(this->map->IsPassable(static_cast<int>(init_pos.x - 1), static_cast<int>(init_pos.y))) &&

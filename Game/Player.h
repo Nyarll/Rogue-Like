@@ -27,6 +27,7 @@ private:
 	int font;
 
 	int Exp;	// —İŒvŠl“¾ŒoŒ±’l
+	int next_exp;
 
 public:
 	Player();

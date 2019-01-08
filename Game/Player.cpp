@@ -22,6 +22,7 @@ Player::Player()
 
 	this->level = 1;
 	this->Exp = 0;
+	this->next_exp = 100 * this->level;
 
 	this->gh = LoadGraph("Resources/Textures/Characters_32_48.png");
 	this->animation_cnt = 0;
@@ -61,6 +62,12 @@ bool Player::Update(std::vector<Enemy> enemy)
 		if (this->move_count == 1)
 		{
 			this->end_flag = true;
+		}
+
+		if (this->Exp >= this->next_exp)
+		{
+			this->next_exp += 75 * this->level;
+			this->LevelUp();
 		}
 
 		// 移動中ではないなら
@@ -303,7 +310,7 @@ void Player::LevelUp()
 	msg.SetMessage(COLOR_YELLOW, " %s は %d レベルになった", this->name, this->level);
 
 	// ステータスアップ
-	int next_hp = this->max_hp + rand() % 20 + 10;
+	int next_hp = this->max_hp + this->Dice(3, 3) + 1;
 	msg.SetMessage(COLOR_WHITE, " HP : %d → %d", this->max_hp, next_hp);
 	this->max_hp = next_hp;
 	this->now_hp = next_hp;

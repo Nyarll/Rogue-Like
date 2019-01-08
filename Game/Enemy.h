@@ -8,7 +8,8 @@ class Map;
 typedef enum
 {
 	Slime,
-	TypeNum
+	TypeNum,
+	TypeNull
 }EnemyType;
 
 class Enemy extends Actor
@@ -16,10 +17,9 @@ class Enemy extends Actor
 private:
 	static const int MOVING_INTERVAL = 16;
 	static const int GRAPH_SIZE_X = 32;
-	static const int GRAPH_SIZE_Y = 32; 
+	static const int GRAPH_SIZE_Y = 32;
 
 private:
-	int type;
 
 	Vector2 target_pos;
 
@@ -27,8 +27,11 @@ private:
 
 	int exp;
 
+	int type;
+
 public:
-	Enemy(int player_level);
+	Enemy() { this->type = TypeNull; };
+	Enemy(int player_level, int now_floor);
 	~Enemy();
 
 	void SetTargetPosition(const Vector2& target);
@@ -44,5 +47,20 @@ public:
 
 	Vector2 Attack()override;
 	void Damage(int damage)override;			// Žó‚¯‚éƒ_ƒ[ƒW
+
+	void UpdateStatus(int player_level, int now_floor);
 };
 
+class ObjectSlime extends Enemy
+{
+public:
+	ObjectSlime(int player_level, int now_floor) : Enemy(player_level, now_floor)
+	{
+		this->gh = LoadGraph("Resources/Textures/Slime.png");
+		this->name = "Slime";
+	};
+	~ObjectSlime()
+	{
+
+	}
+};
