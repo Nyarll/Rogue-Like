@@ -100,6 +100,9 @@
     <ClCompile Include="Game\Actor.cpp">
       <Filter>ゲーム</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Item.cpp">
+      <Filter>ゲーム</Filter>
+    </ClCompile>
   </ItemGroup>
   <!-- ヘッダファイル -->
   <ItemGroup>
@@ -179,6 +182,9 @@
       <Filter>ゲーム</Filter>
     </ClInclude>
     <ClInclude Include="Game\Actor.h">
+      <Filter>ゲーム</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Item.h">
       <Filter>ゲーム</Filter>
     </ClInclude>
   </ItemGroup>
