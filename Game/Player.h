@@ -28,6 +28,7 @@ private:
 	Vector2 graph_p;
 
 	int font;
+	int menu_font;
 
 	int Exp;	// —ÝŒvŠl“¾ŒoŒ±’l
 	int next_exp;
@@ -61,4 +62,5 @@ public:
 
 	void GettingItem(const Item& item);
 	int GetInventoryInItemNum();
+	void DrawInventoryList();
 };
