@@ -28,6 +28,7 @@ public:
 	IntVector2 GetPosition();
 
 	void Render(const Vector2& screen_pos, const int grid_size);
+	void DrawItem(int x, int y);
 
 public:
 	void CreateRecoveryPortion();

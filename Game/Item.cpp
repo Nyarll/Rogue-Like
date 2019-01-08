@@ -41,17 +41,32 @@ void Item::Render(const Vector2& screen_pos, const int grid_size)
 	int x2 = x1 + grid_size;
 	int y2 = y1 + grid_size;
 
-	bool debug_mode = true;
-
-	if (debug_mode)
+	if (this->type == ItemTypeNull)
 	{
-		DrawCircle(x, y, 10, COLOR_AQUA);
+		DrawCircle(x, y, 10, COLOR_RED);
 		DrawBox(x1, y1, x2, y2, COLOR_LIME, false);
 	}
+	else
+	{
+		DrawRectRotaGraph(x, y, 0, 0, 32, 32, 1.5, 0.0, this->gh, true);
+		DrawBox(x1, y1, x2, y2, COLOR_AQUA, false);
+	}
+}
+
+void Item::DrawItem(int x, int y)
+{
+	int x1 = x - (32 / 2) * 0.75;
+	int y1 = y - (32 / 2) * 0.75;
+	int x2 = x1 + (32) * 0.75;
+	int y2 = y1 + (32) * 0.75;
+
+	DrawRectRotaGraph(x, y, 0, 0, 32, 32, 0.75, 0.0, this->gh, true);
+	DrawBox(x1, y1, x2, y2, COLOR_AQUA, false);
 }
 
 void Item::CreateRecoveryPortion()
 {
 	this->type = RecoveryPortion;
 	this->name = "ƒ|[ƒVƒ‡ƒ“";
+	this->gh = LoadGraph("Resources/Textures/Portion.png");
 }

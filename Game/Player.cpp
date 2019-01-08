@@ -417,11 +417,14 @@ void Player::DrawInventoryList()
 	{
 		if (i < 16)
 		{
-			DrawFormatStringFToHandle(60, 16 * i + 60, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
+
+			this->inventory[i].DrawItem(60 - (32 / 2) * 0.75, 32 * i + 60 + (32 / 2) * 0.75);
+			DrawFormatStringFToHandle(60, 32 * i + 60, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
 		}
 		else
 		{
-			DrawFormatStringFToHandle(SCREEN_CENTER_X + 60, 16 * (i - 16) + 60, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
+			this->inventory[i].DrawItem(60 - (32 / 2) * 0.75, 32 * (i - 16) + 60 + (32 / 2) * 0.75);
+			DrawFormatStringFToHandle(SCREEN_CENTER_X + 60, 32 * (i - 16) + 65, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
 		}
 	}
 }
