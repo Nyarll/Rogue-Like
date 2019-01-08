@@ -8,8 +8,8 @@ class Map;
 typedef enum
 {
 	Slime,
-	TypeNum,
-	TypeNull
+	EnemyTypeNum,
+	EnemyTypeNull
 }EnemyType;
 
 class Enemy extends Actor

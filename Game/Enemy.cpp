@@ -10,7 +10,7 @@ Enemy::Enemy(int player_level, int now_floor)
 	this->move_direction = this->direction;
 
 	this->name = "Null Enemy";
-	this->type = TypeNull;
+	this->type = EnemyTypeNull;
 
 	this->UpdateStatus(player_level, now_floor);
 }
@@ -312,7 +312,7 @@ void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 
 	if (this->alive)
 	{
-		if (this->type == TypeNull)
+		if (this->type == EnemyTypeNull)
 		{
 			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
 			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
@@ -399,6 +399,6 @@ void Enemy::UpdateStatus(int player_level, int now_floor)
 	this->max_hp = this->Dice(3 + (player_level), 6) + this->Dice(1 + now_floor, 4) + (player_level);
 	this->now_hp = this->max_hp;
 	this->ATK = this->Dice(2 + (player_level), 6) + (player_level) + this->Dice(now_floor, 3);
-	this->DEF = this->Dice(2 + (player_level), 6) + (player_level) + this->Dice(now_floor, 3);
+	this->DEF = (player_level) + this->Dice(now_floor, 3);
 	this->exp = this->max_hp / 2 + Dice(player_level, 6);
 }

@@ -28,6 +28,12 @@ template<class T> T Clamp(const T& now, const T& min, const T& max)
 	return n;
 }
 
+class IntVector2
+{
+public:
+	int x, y;
+};
+
 // <システム> ----------------------------------------------------------
 const char* const GAME_TITLE = "Block Breaking";    // ゲームタイトル
 

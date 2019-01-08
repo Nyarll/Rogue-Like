@@ -3,6 +3,7 @@
 #include "Dungeons.h"
 #include "Define.h"
 #include "Enemy.h"
+#include "Item.h"
 
 class Map;
 class Player;
@@ -39,6 +40,7 @@ private:
 	Player* player;
 	
 	std::vector<Enemy> enemy;
+	std::vector<Item> item;
 
 	Action act;
 

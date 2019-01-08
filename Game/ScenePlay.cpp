@@ -131,7 +131,7 @@ void ScenePlay::InitDungeons()
 	{
 		Enemy enemy(this->player->GetLevel(), this->dng_floor);
 
-		int type = rand() % TypeNum;
+		int type = rand() % EnemyTypeNum;
 		switch (type)
 		{
 		case Slime:
@@ -300,9 +300,20 @@ void ScenePlay::GameFunction()
 void ScenePlay::GameAction()
 {
 	Vector2 p_pos = this->player->GetPosition();
-
+	MessageWindow& msg = MessageWindow::singleton();
 	this->GotoNextFloor(p_pos);
 	this->MagicCircleAction(p_pos);
+	
+	for (int i = 0; i < this->item.size(); i++)
+	{
+		if (static_cast<int>(p_pos.x) == this->item[i].GetPosition().x &&
+			static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
+		{
+			msg.SetMessage(COLOR_AQUA, "%s ‚ðE‚Á‚½", this->item[i].GetItemName());
+			this->item.erase(this->item.begin() + i);
+			break;
+		}
+	}
 }
 
 void ScenePlay::WaitTurnSequence()
@@ -342,6 +353,30 @@ void ScenePlay::EnemyTurnSequence()
 					msg.SetMessage(COLOR_AQUA, "%s ‚Í “|‚³‚ê‚½", enemy[i].GetName());
 					msg.SetMessage(COLOR_AQUA, "%s ‚Í %d ‚ÌŒoŒ±’l‚ðŠl“¾", this->player->GetName(), this->enemy[i].GetExp());
 					this->player->AddExp(this->enemy[i].GetExp());
+
+					//if (!(rand() % 5))
+					{
+						IntVector2 drop_point = { static_cast<int>(enemy[i].GetPosition().x), static_cast<int>(enemy[i].GetPosition().y) };
+						for (int i = 0; i < this->item.size(); i++)
+						{
+							if (this->item[i].GetPosition().x == drop_point.x && this->item[i].GetPosition().y == drop_point.y)
+							{
+								drop_point.x += 1;
+								break;
+							}
+						}
+
+						Item drop_item(drop_point.x, drop_point.y);
+						switch (rand() % ItemTypeNum)
+						{
+						case RecoveryPortion:
+							drop_item.CreateRecoveryPortion();
+							break;
+						}
+						msg.SetMessage(COLOR_WHITE, "%s ‚Í %s ‚ð—Ž‚Æ‚µ‚½", enemy[i].GetName(), drop_item.GetItemName());
+						this->item.push_back(drop_item);
+					}
+
 					this->enemy.erase(this->enemy.begin() + i);
 				}
 			}
@@ -489,6 +524,12 @@ void ScenePlay::Render(void)
 	Vector2 screen_pos = this->GetScreenPosition();
 
 	this->map->Render(screen_pos, Map::GRID_SIZE, false);
+
+	for (int i = 0; i < this->item.size(); i++)
+	{
+		this->item[i].Render(screen_pos, Map::GRID_SIZE);
+	}
+
 	this->player->Render(screen_pos, Map::GRID_SIZE);
 	for (int i = 0; i < this->enemy.size(); i++)
 	{
