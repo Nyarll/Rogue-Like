@@ -9,6 +9,9 @@ Enemy::Enemy(int player_level, int now_floor)
 	this->direction = rand() % DirectionNum;
 	this->move_direction = this->direction;
 
+	this->name = "Null Enemy";
+	this->type = TypeNull;
+
 	this->UpdateStatus(player_level, now_floor);
 }
 

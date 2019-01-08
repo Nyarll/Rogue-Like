@@ -31,7 +31,6 @@ protected:
 	int type;
 
 public:
-	Enemy() { this->type = TypeNull; };
 	Enemy(int player_level, int now_floor);
 	~Enemy();
 
@@ -50,19 +49,9 @@ public:
 	void Damage(int damage)override;			// Žó‚¯‚éƒ_ƒ[ƒW
 
 	void UpdateStatus(int player_level, int now_floor);
-};
 
-class ObjectEnemy extends Enemy
-{
 public:
-	ObjectEnemy(int player_level, int now_floor) : Enemy(player_level, now_floor) 
-	{
-		this->name = "Null Enemy";
-		this->type = TypeNull;
-	};
-	~ObjectEnemy() {};
-
-	void ObjectSlime()
+	void CreateSlime()
 	{
 		this->gh = LoadGraph("Resources/Textures/Slime.png");
 		this->name = "Slime";
