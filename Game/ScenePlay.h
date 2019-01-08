@@ -60,16 +60,33 @@ private:
 	bool action_flag = false;
 	bool action_flag_old = false;
 
-	int wait_time = 0;
-
-public:
+private:
+	// マップ関連
 	void InitDungeons();
 	bool ChangeMap();
 
+	// 踏んだ床の種類によって判定
 	void GotoNextFloor(const Vector2& playerPosition);
 	void MagicCircleAction(const Vector2& actorPosition);
 
+	// 機能など
+	void GameFunction();
+	void GameAction();
 
+	// シークエンス処理
+	void WaitTurnSequence();
+	void PlayerTurnSequence();
+	void EnemyTurnSequence();
+	void TurnEndSequence();
+	void GameTurnSequence();
+
+	// 表示関連
+	Vector2 GetScreenPosition();
+	void RenderNowFloor();
+	void RenderMap();
+	void RenderOtherUI();
+
+public:
 	// 操作
 	void Initialize()override {};
 	void Update()override;

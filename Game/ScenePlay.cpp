@@ -255,11 +255,108 @@ void ScenePlay::MagicCircleAction(const Vector2 & actorPosition)
 	}
 }
 
-void ScenePlay::Update(void)
+void ScenePlay::GameFunction()
 {
 	InputManager& input = InputManager::singleton();
-	input.Update();
-	MessageWindow& me = MessageWindow::singleton();
+	if (input.key->GetDown(KEY_INPUT_F4))
+	{
+		MessageWindow& me = MessageWindow::singleton();
+		me.SetMessage(COLOR_YELLOW, "Debug Function : Map Reset");
+		this->InitDungeons();
+	}
+	if (input.key->GetDown(KEY_INPUT_M))
+	{
+		if (!this->render_map)
+		{
+			this->render_map = true;
+		}
+		else
+		{
+			this->render_map = false;
+		}
+	}
+	if (input.key->GetDown(KEY_INPUT_T))
+	{
+		if (!this->render_msg)
+		{
+			this->render_msg = true;
+		}
+		else
+		{
+			this->render_msg = false;
+		}
+	}
+}
+void ScenePlay::GameAction()
+{
+	Vector2 p_pos = this->player->GetPosition();
+
+	this->GotoNextFloor(p_pos);
+	this->MagicCircleAction(p_pos);
+}
+
+void ScenePlay::WaitTurnSequence()
+{
+	this->playerAttackPoint = { -1,-1 };
+	this->enemyAttackPoint = { -1,-1 };
+	this->act = PlayerTurn;
+}
+void ScenePlay::PlayerTurnSequence()
+{
+	InputManager& input = InputManager::singleton();
+	if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
+	{
+		this->playerAttackPoint = player->Attack();
+		this->act = EnemyTurn;
+	}
+	if (this->player->Update(this->enemy))
+	{
+		//me.SetMessage(0xffffff00, "Debug Log : PlayerTurn Sequence");
+		this->act = EnemyTurn;
+	}
+}
+void ScenePlay::EnemyTurnSequence()
+{
+	MessageWindow& msg = MessageWindow::singleton();
+	// エネミーがプレイヤーから攻撃されたかどうか
+	if (static_cast<int>(this->playerAttackPoint.x) != (-1) &&
+		static_cast<int>(this->playerAttackPoint.y) != (-1))
+	{
+		for (int i = 0; i < this->enemy.size(); i++)
+		{
+			if (this->enemy[i].GetPosition() == this->playerAttackPoint)
+			{
+				this->enemy[i].Damage(this->player->AttackDamage(this->enemy[i].GetDEF()));
+				if (!enemy[i].GetAlive())
+				{
+					msg.SetMessage(COLOR_AQUA, "%s は 倒された", enemy[i].GetName());
+					msg.SetMessage(COLOR_AQUA, "%s は %d の経験値を獲得", this->player->GetName(), this->enemy[i].GetExp());
+					this->player->AddExp(this->enemy[i].GetExp());
+					this->enemy.erase(this->enemy.begin() + i);
+				}
+			}
+		}
+	}
+	// すべてのエネミーにプレイヤーの座標を登録
+	for (int i = 0; i < this->enemy.size(); i++)
+	{
+		this->enemy[i].SetTargetPosition(this->player->GetPosition());
+	}
+	for (int i = 0; i < this->enemy.size(); i++)
+	{
+		this->enemy[i].Update(this->enemy, i);
+	}
+	this->act = TurnEnd;
+}
+void ScenePlay::TurnEndSequence()
+{
+	this->act = Wait;
+}
+
+void ScenePlay::GameTurnSequence()
+{
+	InputManager& input = InputManager::singleton();
+	MessageWindow& msg = MessageWindow::singleton();
 
 	if (!this->change_flag)
 	{
@@ -267,73 +364,20 @@ void ScenePlay::Update(void)
 		switch (this->act)
 		{
 		case Wait:
-		{
-			this->playerAttackPoint = { -1,-1 };
-			this->enemyAttackPoint = { -1,-1 };
-
-			this->act = PlayerTurn;
-		}
-		//me.SetMessage(0xffff00ff, "Debug Log : Wait Sequence");
-		break;
+			this->WaitTurnSequence();
+			break;
 
 		case PlayerTurn:
-		{
-			if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
-			{
-				this->playerAttackPoint = player->Attack();
-				this->act = EnemyTurn;
-			}
-			if (this->player->Update(this->enemy))
-			{
-				//me.SetMessage(0xffffff00, "Debug Log : PlayerTurn Sequence");
-				this->act = EnemyTurn;
-			}
-		}
-		break;
+			this->PlayerTurnSequence();
+			break;
 
 		case EnemyTurn:
-		{
-			// エネミーがプレイヤーから攻撃されたかどうか
-			if (static_cast<int>(this->playerAttackPoint.x) != (-1) &&
-				static_cast<int>(this->playerAttackPoint.y) != (-1))
-			{
-				for (int i = 0; i < this->enemy.size(); i++)
-				{
-					if (this->enemy[i].GetPosition() == this->playerAttackPoint)
-					{
-						this->enemy[i].Damage(this->player->AttackDamage(this->enemy[i].GetDEF()));
-						if (!enemy[i].GetAlive())
-						{
-							me.SetMessage(COLOR_AQUA, "%s は 倒された", enemy[i].GetName());
-							me.SetMessage(COLOR_AQUA, "%s は %d の経験値を獲得", this->player->GetName(), this->enemy[i].GetExp());
-							this->player->AddExp(this->enemy[i].GetExp());
-							this->enemy.erase(this->enemy.begin() + i);
-						}
-					}
-				}
-			}
-
-			// すべてのエネミーにプレイヤーの座標を登録
-			for (int i = 0; i < this->enemy.size(); i++)
-			{
-				this->enemy[i].SetTargetPosition(this->player->GetPosition());
-			}
-			for (int i = 0; i < this->enemy.size(); i++)
-			{
-				this->enemy[i].Update(this->enemy, i);
-			}
-			this->act = TurnEnd;
-			//me.SetMessage(0xffff00ff, "Debug Log : EnemyTurn Sequence");
-		}
-		break;
+			this->EnemyTurnSequence();
+			break;
 
 		case TurnEnd:	// 全シークエンス終了
-		{
-			this->act = Wait;
-			//me.SetMessage(0xffff00ff, "Debug Log : TurnEnd Sequence");
-		}
-		break;
-
+			this->TurnEndSequence();
+			break;
 		}
 	}
 	else
@@ -343,41 +387,19 @@ void ScenePlay::Update(void)
 			this->change_flag = false;
 		}
 	}
+}
+
+void ScenePlay::Update(void)
+{
+	InputManager& input = InputManager::singleton();
+	input.Update();
+	MessageWindow& me = MessageWindow::singleton();
 
 	// 機能 / ターンには直接影響を及ぼさないもの
-	{
-		Vector2 p_pos = this->player->GetPosition();
+	this->GameAction();
+	this->GameFunction();
 
-		this->GotoNextFloor(p_pos);
-		this->MagicCircleAction(p_pos);
-		if (input.key->GetDown(KEY_INPUT_F4))
-		{
-			me.SetMessage(COLOR_YELLOW, "Debug Function : Map Reset");
-			this->InitDungeons();
-		}
-		if (input.key->GetDown(KEY_INPUT_M))
-		{
-			if (!this->render_map)
-			{
-				this->render_map = true;
-			}
-			else
-			{
-				this->render_map = false;
-			}
-		}
-		if (input.key->GetDown(KEY_INPUT_T))
-		{
-			if (!this->render_msg)
-			{
-				this->render_msg = true;
-			}
-			else
-			{
-				this->render_msg = false;
-			}
-		}
-	}
+	this->GameTurnSequence();
 
 	if (this->player->GetAlive() == false)
 	{
@@ -388,10 +410,9 @@ void ScenePlay::Update(void)
 	this->action_flag_old = this->action_flag;
 }
 
-void ScenePlay::Render(void)
+Vector2 ScenePlay::GetScreenPosition()
 {
 	Vector2 player_pos = this->player->GetRenderPosition();
-
 	Vector2 screen_pos;
 	screen_pos.x = (player_pos.x * Map::GRID_SIZE) - SCREEN_WIDTH / 2;
 	screen_pos.y = (player_pos.y * Map::GRID_SIZE) - SCREEN_HEIGHT / 2;
@@ -412,18 +433,16 @@ void ScenePlay::Render(void)
 	if (screen_pos.y > Map::BOUNDS.bottom - SCREEN_BOTTOM)
 	{
 		screen_pos.y = Map::BOUNDS.bottom - SCREEN_BOTTOM;
-	}/**/
-
-	this->map->Render(screen_pos, Map::GRID_SIZE, false);
-	this->player->Render(screen_pos, Map::GRID_SIZE);
-	for (int i = 0; i < this->enemy.size(); i++)
-	{
-		this->enemy[i].Render(screen_pos, Map::GRID_SIZE);
 	}
-
+	return screen_pos;
+}
+void ScenePlay::RenderNowFloor()
+{
 	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20 + 3, 3, COLOR_BLACK, this->msg_font, "%3d F", this->dng_floor);
 	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20, 0, COLOR_AQUA, this->msg_font, "%3d F", this->dng_floor);
-
+}
+void ScenePlay::RenderMap()
+{
 	if (this->render_map)
 	{
 		int x = static_cast<int>(((this->player->GetPosition().x + 0.5f) * 4) - 0);
@@ -442,8 +461,32 @@ void ScenePlay::Render(void)
 			DrawCircle(ex + correction.x, ey + correction.y, 2, COLOR_RED, TRUE);
 		}
 	}
+}
+void ScenePlay::RenderOtherUI()
+{
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 34, SCREEN_BOTTOM - 20,
+		COLOR_BLACK, this->ui_font, "Message Log : T key");
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 34 - 3, SCREEN_BOTTOM - 20 - 3,
+		COLOR_YELLOW, this->ui_font, "Message Log : T key");
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 20, SCREEN_BOTTOM - 40,
+		COLOR_BLACK, this->ui_font, "Map : M key");
+	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 20 - 3, SCREEN_BOTTOM - 40 - 3,
+		COLOR_YELLOW, this->ui_font, "Map : M key");
+}
+
+void ScenePlay::Render(void)
+{
+	Vector2 screen_pos = this->GetScreenPosition();
+
+	this->map->Render(screen_pos, Map::GRID_SIZE, false);
+	this->player->Render(screen_pos, Map::GRID_SIZE);
+	for (int i = 0; i < this->enemy.size(); i++)
+	{
+		this->enemy[i].Render(screen_pos, Map::GRID_SIZE);
+	}
+	this->RenderNowFloor();
+	this->RenderMap();
 	SetDrawBright(255, 255, 255);
-	
 	this->player->DrawPlayerStatus();
 
 	if (this->render_msg)
@@ -455,23 +498,5 @@ void ScenePlay::Render(void)
 	{
 		this->player->DrawPlayerExp();
 	}
-
-	if (this->player->GetMoveCount() == 0)
-	{
-		this->wait_time++;
-
-		if (this->wait_time >= 60 * 6)
-		{
-			this->wait_time = 60;
-			
-		}
-	}
-	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 34, SCREEN_BOTTOM - 20,
-		COLOR_BLACK, this->ui_font, "Message Log : T key");
-	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 34 - 3, SCREEN_BOTTOM - 20 - 3,
-		COLOR_YELLOW, this->ui_font, "Message Log : T key");
-	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 20, SCREEN_BOTTOM - 40,
-		COLOR_BLACK, this->ui_font, "Map : M key");
-	DrawFormatStringFToHandle(SCREEN_RIGHT - 7 * 20 - 3, SCREEN_BOTTOM - 40 - 3,
-		COLOR_YELLOW, this->ui_font, "Map : M key");
+	this->RenderOtherUI();
 }
