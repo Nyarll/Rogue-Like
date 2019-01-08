@@ -8,7 +8,8 @@ enum
 	Left,
 	Right,
 	Up,
-	Down
+	Down,
+	DirectionNum
 };
 
 class Map;

@@ -227,8 +227,8 @@ void Player::Render(const Vector2& screen_position, const int grid_size)
 	{
 		if (debug_mode)
 		{
-			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
-			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
+			int x = static_cast<int>(((this->position.x + 0.5f) * grid_size) - screen_position.x);
+			int y = static_cast<int>(((this->position.y + 0.5f) * grid_size) - screen_position.y);
 
 			int x1 = static_cast<int>(((this->render_position.x) * grid_size) - screen_position.x);
 			int y1 = static_cast<int>(((this->render_position.y) * grid_size) - screen_position.y);

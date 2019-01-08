@@ -5,16 +5,22 @@
 
 class Map;
 
+typedef enum
+{
+	Slime,
+	TypeNum
+}EnemyType;
+
 class Enemy extends Actor
 {
 private:
 	static const int MOVING_INTERVAL = 16;
 	static const int GRAPH_SIZE_X = 32;
-	static const int GRAPH_SIZE_Y = 32;
-
-	static std::vector<std::string> EnemyNameList;
+	static const int GRAPH_SIZE_Y = 32; 
 
 private:
+	int type;
+
 	Vector2 target_pos;
 
 	int move_direction;

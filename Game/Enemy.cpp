@@ -3,24 +3,26 @@
 
 #include "MessageWindow.h"
 
-std::vector<std::string> Enemy::EnemyNameList =
-{
-	"スライム",
-	"バット"
-};
-
 Enemy::Enemy(int player_level)
 {
 	this->move_count = 0;
-	this->direction = Down;
+	this->direction = rand() % DirectionNum;
+	this->move_direction = this->direction;
 
 	this->max_hp = this->Dice(3 + (player_level - 1), 6) + this->Dice(2, 4);
 	this->now_hp = this->max_hp;
 
 	this->exp = this->max_hp + Dice(player_level, 6);
 
-	this->name = "Test Monster";
+	this->type = rand() % TypeNum;
 
+	switch (this->type)
+	{
+	case Slime:
+		this->gh = LoadGraph("Resources/Textures/Slime.png");
+		this->name = "Slime";
+		break;
+	}
 	this->ATK = this->Dice(2, 6);
 	this->DEF = this->Dice(2, 6);
 }
@@ -313,7 +315,7 @@ bool Enemy::Update(std::vector<Enemy>& enemy, int num)
 void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 {
 	// デバッグ用
-	bool debug_mode = true;
+	bool debug_mode = false;
 
 	if (this->move_count > 0)
 	{
@@ -369,11 +371,13 @@ void Enemy::Render(const Vector2 & screen_position, const int grid_size)
 			int x = static_cast<int>(((this->render_position.x + 0.5f) * grid_size) - screen_position.x);
 			int y = static_cast<int>(((this->render_position.y + 0.5f) * grid_size) - screen_position.y);
 
-			int x1 = static_cast<int>(((this->render_position.x) * grid_size) - screen_position.x);
-			int y1 = static_cast<int>(((this->render_position.y) * grid_size) - screen_position.y);
+			int x1 = static_cast<int>(((this->position.x) * grid_size) - screen_position.x);
+			int y1 = static_cast<int>(((this->position.y) * grid_size) - screen_position.y);
 			int x2 = x1 + grid_size;
 			int y2 = y1 + grid_size;
 
+			DrawRectRotaGraph(x, y, this->move_direction * 32, 0, 32, 32, 1.25, 0.0, this->gh, true);
+			DrawBox(x1, y1, x2, y2, COLOR_AQUA, false);
 		}
 	}
 }
