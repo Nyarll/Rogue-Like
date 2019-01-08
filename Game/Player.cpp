@@ -19,6 +19,7 @@ Player::Player()
 	this->step_count = 0;
 
 	this->font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 32, -1);
+	this->menu_font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 16, -1);
 
 	this->direction = 1;
 
@@ -408,4 +409,19 @@ void Player::GettingItem(const Item & item)
 int Player::GetInventoryInItemNum()
 {
 	return this->inventory.size();
+}
+
+void Player::DrawInventoryList()
+{
+	for (int i = 0; i < this->inventory.size(); i++)
+	{
+		if (i < 16)
+		{
+			DrawFormatStringFToHandle(60, 16 * i + 60, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
+		}
+		else
+		{
+			DrawFormatStringFToHandle(SCREEN_CENTER_X + 60, 16 * (i - 16) + 60, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
+		}
+	}
 }

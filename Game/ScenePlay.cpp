@@ -314,25 +314,41 @@ void ScenePlay::GameAction()
 	MessageWindow& msg = MessageWindow::singleton();
 	this->GotoNextFloor(p_pos);
 	this->MagicCircleAction(p_pos);
+
+	static bool f = false;
+	static bool f_old = false;
+
+	if (this->player->GetInventoryInItemNum() < Player::MAX_ITEM_INVENTORY)
+	{
+		f = false;
+	}
 	
 	for (int i = 0; i < this->item.size(); i++)
 	{
-		if (static_cast<int>(p_pos.x) == this->item[i].GetPosition().x &&
-			static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
+		if (!f)
 		{
-			if (this->player->GetInventoryInItemNum() == Player::MAX_ITEM_INVENTORY)
+			if (static_cast<int>(p_pos.x) == this->item[i].GetPosition().x &&
+				static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
 			{
-				msg.SetMessage(COLOR_RED, "インベントリがいっぱいです！");
+				if (this->player->GetInventoryInItemNum() == Player::MAX_ITEM_INVENTORY)
+				{
+					f = true;
+					if (f && !f_old)
+					{
+						msg.SetMessage(COLOR_RED, "インベントリがいっぱいです！");
+					}
+				}
+				else
+				{
+					msg.SetMessage(COLOR_AQUA, "%s を拾った", this->item[i].GetItemName());
+					this->player->GettingItem(this->item[i]);
+					this->item.erase(this->item.begin() + i);
+				}
+				break;
 			}
-			else
-			{
-				msg.SetMessage(COLOR_AQUA, "%s を拾った", this->item[i].GetItemName());
-				this->player->GettingItem(this->item[i]);
-				this->item.erase(this->item.begin() + i);
-			}
-			break;
 		}
 	}
+	f_old = f;
 }
 
 void ScenePlay::WaitTurnSequence()
@@ -579,6 +595,14 @@ void ScenePlay::Render(void)
 
 	if (this->menu_flag)
 	{
-		DrawBox(0, 0, 200, 200, COLOR_RED, true);
+		int x1 = 0;
+		int y1 = 0;
+		int x2 = 800;
+		int y2 = 800;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+		DrawBox(x1, y1, x2, y2, COLOR_BLACK, true);
+		DrawBox(x1, y1, x2, y2, COLOR_LIME, false);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+		this->player->DrawInventoryList();
 	}
 }
