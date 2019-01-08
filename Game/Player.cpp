@@ -293,8 +293,13 @@ void Player::DrawPlayerStatus()
 	SetDrawBright(255, 255, 255);
 	DrawFormatStringFToHandle(3, 3, COLOR_BLACK, this->font, "Lv :%3d", this->level);
 	DrawFormatStringFToHandle(0, 0, COLOR_AQUA, this->font, "Lv :%3d", this->level);
+
+	float hx = 14.0f * 9.0f + (14.0f * 18.0f) * (float)((float)this->now_hp / (float)this->max_hp);
+	DrawBox(14 * 9 + 3, 3, 14 * 9 + (14 * 18) + 3, 34 + 3, COLOR_BLACK, true);
+	DrawBox(14 * 9, 0, hx, 34, COLOR_LIME, true);
+	DrawBox(14 * 9, 0, 14 * 9 + (14 * 18) + 3, 34 + 3, COLOR_BLACK, false);
 	DrawFormatStringFToHandle(14 * 9 + 3, 3, COLOR_BLACK, this->font, "HP(%4d / %4d)", this->now_hp, this->max_hp);
-	DrawFormatStringFToHandle(14 * 9, 0, COLOR_AQUA, this->font, "HP(%4d / %4d)", this->now_hp, this->max_hp);
+	DrawFormatStringFToHandle(14 * 9, 0, COLOR_RED, this->font, "HP(%4d / %4d)", this->now_hp, this->max_hp);
 }
 
 int Player::GetMoveCount() const
