@@ -27,6 +27,7 @@ private:
 
 	int exp;
 
+protected:
 	int type;
 
 public:
@@ -51,16 +52,20 @@ public:
 	void UpdateStatus(int player_level, int now_floor);
 };
 
-class ObjectSlime extends Enemy
+class ObjectEnemy extends Enemy
 {
 public:
-	ObjectSlime(int player_level, int now_floor) : Enemy(player_level, now_floor)
+	ObjectEnemy(int player_level, int now_floor) : Enemy(player_level, now_floor) 
+	{
+		this->name = "Null Enemy";
+		this->type = TypeNull;
+	};
+	~ObjectEnemy() {};
+
+	void ObjectSlime()
 	{
 		this->gh = LoadGraph("Resources/Textures/Slime.png");
 		this->name = "Slime";
-	};
-	~ObjectSlime()
-	{
-
+		this->type = Slime;
 	}
 };

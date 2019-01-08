@@ -130,18 +130,18 @@ void ScenePlay::InitDungeons()
 	for (int i = NumObject - NumMobs; i < NumObject - 2; i++)
 	{
 		Enemy enemy;
+		ObjectEnemy obj(this->player->GetLevel(), this->dng_floor);
 
 		int type = rand() % TypeNum;
-
 		switch (type)
 		{
 		case Slime:
 		{
-			ObjectSlime slime(this->player->GetLevel(), this->dng_floor);
-			enemy = slime;
+			obj.ObjectSlime();
 		}
 		break;
 		}
+		enemy = obj;
 
 		init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x) - 1,
 			static_cast<float>(this->map->map_->GetInitMobPosition(i).y) - 1 };
