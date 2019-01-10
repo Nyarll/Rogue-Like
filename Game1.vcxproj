@@ -99,6 +99,8 @@
     <ClCompile Include="Game\Player.cpp" />
     <ClCompile Include="Game\SceneManager.cpp" />
     <ClCompile Include="Game\ScenePlay.cpp" />
+    <ClCompile Include="Game\SceneResult.cpp" />
+    <ClCompile Include="Game\SceneTitle.cpp" />
     <ClCompile Include="Game\Vector.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="Libraries\GameLibrary\GameLibAudio.cpp" />
@@ -127,6 +129,8 @@
     <ClInclude Include="Game\Scene.h" />
     <ClInclude Include="Game\SceneManager.h" />
     <ClInclude Include="Game\ScenePlay.h" />
+    <ClInclude Include="Game\SceneResult.h" />
+    <ClInclude Include="Game\SceneTitle.h" />
     <ClInclude Include="Game\Singleton.h" />
     <ClInclude Include="Game\Vector.h" />
     <ClInclude Include="Libraries\GameLibrary\GameLibAudio.h" />

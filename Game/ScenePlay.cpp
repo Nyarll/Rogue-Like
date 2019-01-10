@@ -1,4 +1,5 @@
 #include "ScenePlay.h"
+#include "SceneManager.h"
 #include "Map.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -542,7 +543,9 @@ void ScenePlay::Update(void)
 
 	if (this->player->GetAlive() == false)
 	{
-		this->action_flag = false;
+		// this->action_flag = false;
+		SceneManager& manager = SceneManager::singleton();
+		manager.RequestScene(SCENE_RESULT);
 	}
 
 	input.key->UpdateOld();

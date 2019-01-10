@@ -12,7 +12,10 @@
 #include "GameMain.h"
 
 #include "SceneManager.h"
+
+#include "SceneTitle.h"
 #include "ScenePlay.h"
+#include "SceneResult.h"
 
 
 // <GameƒNƒ‰ƒX> ****************************************************************
@@ -27,8 +30,11 @@ Game::Game()
 {
 	SceneManager& scene_manager = SceneManager::singleton();
 
+	scene_manager.AddScene(SCENE_TITLE, SceneTitle::Create);
 	scene_manager.AddScene(SCENE_PLAY, ScenePlay::Create);
-	scene_manager.SetStartScene(SCENE_PLAY);
+	scene_manager.AddScene(SCENE_RESULT, SceneResult::Create);
+
+	scene_manager.SetStartScene(SCENE_TITLE);
 }
 
 
