@@ -7,8 +7,6 @@
 typedef enum
 {
 	RecoveryPortion,
-	TempItem,
-	Temp2,
 	ItemTypeNum,
 	ItemTypeNull
 }ItemType;
