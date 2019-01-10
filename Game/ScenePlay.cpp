@@ -317,14 +317,16 @@ void ScenePlay::GameAction()
 
 	for (int i = 0; i < this->item.size(); i++)
 	{
-
 		{
 			if (static_cast<int>(p_pos.x) == this->item[i].GetPosition().x &&
 				static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
 			{
-				this->player->AddItem(this->item[i].GetItemType());
-				msg.SetMessage(COLOR_WHITE, "%s ‚Í %s ‚ðE‚Á‚½", this->player->GetName(), this->item[i].GetItemName());
-				this->item.erase(this->item.begin() + i);
+				if (this->player->GetItemNum(i) < 16)
+				{
+					this->player->AddItem(this->item[i].GetItemType());
+					msg.SetMessage(COLOR_WHITE, "%s ‚Í %s ‚ðE‚Á‚½", this->player->GetName(), this->item[i].GetItemName());
+					this->item.erase(this->item.begin() + i);
+				}
 				break;
 			}
 		}

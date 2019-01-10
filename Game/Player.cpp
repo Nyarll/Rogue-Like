@@ -431,7 +431,7 @@ void Player::DrawInventoryList()
 	double scale = 2.0;
 	for (int i = 0; i < ItemTypeNum; i++)
 	{
-		int x1 = (SCREEN_RIGHT - (ItemTextureSize * scale - ItemTextureSize * scale * i));
+		int x1 = (SCREEN_RIGHT - (ItemTextureSize * scale * ItemTypeNum) + (ItemTextureSize * scale * i));
 		int y1 = (SCREEN_BOTTOM - (ItemTextureSize * scale)) - SCREEN_CENTER_Y / 4;
 		int x2 = x1 + ItemTextureSize * scale;
 		int y2 = y1 + ItemTextureSize * scale;
