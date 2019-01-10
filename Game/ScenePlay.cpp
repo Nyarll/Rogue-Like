@@ -314,10 +314,10 @@ void ScenePlay::GameAction()
 	MessageWindow& msg = MessageWindow::singleton();
 	this->GotoNextFloor(p_pos);
 	this->MagicCircleAction(p_pos);
-	
+
 	for (int i = 0; i < this->item.size(); i++)
 	{
-		
+
 		{
 			if (static_cast<int>(p_pos.x) == this->item[i].GetPosition().x &&
 				static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
@@ -340,6 +340,27 @@ void ScenePlay::WaitTurnSequence()
 void ScenePlay::PlayerTurnSequence()
 {
 	InputManager& input = InputManager::singleton();
+	MessageWindow& msg = MessageWindow::singleton();
+	for (int i = 0; i < ItemTypeNum; i++)
+	{
+		if (input.key->GetDown(this->player->GetNumberKey(i + 1)))
+		{
+			switch (i)
+			{
+			case RecoveryPortion:
+				if (this->player->GetItemNum(RecoveryPortion) > 0)
+				{
+					msg.SetMessage(COLOR_AQUA, "%s は ポーションを使用した", this->player->GetName());
+					this->player->UseItem(RecoveryPortion);
+					int recovery = rand() % 6 + 1 + this->player->GetLevel() * 2;
+					this->player->Recovery(recovery);
+					msg.SetMessage(COLOR_LIME, "%s は %d HPが回復した", this->player->GetName(), recovery);
+					this->act = EnemyTurn;
+				}
+				break;
+			}
+		}
+	}
 	if (input.key->GetDown(KEY_INPUT_Z) && (!this->action_flag))
 	{
 		this->playerAttackPoint = player->Attack();

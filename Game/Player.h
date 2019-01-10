@@ -60,6 +60,8 @@ public:
 
 	void Healing();							// ‰ñ•œ(‰½•à‚©•à‚­‚Æ‚P‰ñ•œ‚·‚é‚â‚Â)
 
+	int GetNumberKey(int num);
+
 	int GetItemNum(int itemType);
 	void AddItem(int itemType);
 	void UseItem(int itemType);

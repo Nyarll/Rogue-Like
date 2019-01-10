@@ -435,9 +435,49 @@ void Player::DrawInventoryList()
 		DrawBox(x1 + 1, y1 + 1, x2 + 1, y2 + 1, COLOR_BLACK, false);
 		DrawBox(x1, y1, x2, y2, COLOR_LIME, false);
 
-		DrawFormatStringToHandle(x2 - 20 + 3, y2 - 20 + 3, COLOR_BLACK, this->menu_font, "%d", this->Inventory[i]);
+		DrawFormatStringToHandle(x2 - 20 + 2, y2 - 20 + 2, COLOR_BLACK, this->menu_font, "%d", this->Inventory[i]);
 		DrawFormatStringToHandle(x2 - 20, y2 - 20, COLOR_WHITE, this->menu_font, "%d", this->Inventory[i]);
+
+		DrawFormatStringToHandle(x1 + 2, y1 + 2, COLOR_BLACK, this->menu_font, "%d", i + 1);
+		DrawFormatStringToHandle(x1, y1, COLOR_YELLOW, this->menu_font, "%d", i + 1);
 	}
 }
 
+int Player::GetNumberKey(int num)
+{
+	switch (num)
+	{
+	case 0:
+		return KEY_INPUT_0;
+		break;
 
+	case 1:
+		return KEY_INPUT_1;
+		break;
+	case 2:
+		return KEY_INPUT_2;
+		break;
+	case 3:
+		return KEY_INPUT_3;
+		break;
+	case 4:
+		return KEY_INPUT_4;
+		break;
+	case 5:
+		return KEY_INPUT_5;
+		break;
+	case 6:
+		return KEY_INPUT_6;
+		break;
+	case 7:
+		return KEY_INPUT_7;
+		break;
+	case 8:
+		return KEY_INPUT_8;
+		break;
+	case 9:
+		return KEY_INPUT_9;
+		break;
+	}
+	return 0;
+}
