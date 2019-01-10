@@ -1,7 +1,5 @@
 #include "Item.h"
 
-
-
 Item::Item(int x, int y)
 {
 	this->pos.x = x;
@@ -41,7 +39,7 @@ void Item::Render(const Vector2& screen_pos, const int grid_size)
 	int x2 = x1 + grid_size;
 	int y2 = y1 + grid_size;
 
-	if (this->type == ItemTypeNull)
+	if (this->type == ItemTypeNull || this->gh == ItemTextures::TextureNotFound)
 	{
 		DrawCircle(x, y, 10, COLOR_RED);
 		DrawBox(x1, y1, x2, y2, COLOR_LIME, false);
@@ -66,7 +64,8 @@ void Item::DrawItem(int x, int y)
 
 void Item::CreateRecoveryPortion()
 {
+	ItemTextures& t = ItemTextures::singleton();
 	this->type = RecoveryPortion;
 	this->name = "ƒ|[ƒVƒ‡ƒ“";
-	this->gh = LoadGraph("Resources/Textures/Portion.png");
+	this->gh = t.GetTexture(RecoveryPortion);
 }

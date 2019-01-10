@@ -19,7 +19,7 @@ Player::Player()
 	this->step_count = 0;
 
 	this->font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 32, -1);
-	this->menu_font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 16, -1);
+	this->menu_font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 20, -1);
 
 	this->direction = 1;
 
@@ -39,6 +39,11 @@ Player::Player()
 
 	this->ATK = Dice(3, 6);
 	this->DEF = Dice(3, 6);
+
+	for (int i = 0; i < ItemTypeNum; i++)
+	{
+		this->Inventory[i] = 0;
+	}
 }
 
 Player::~Player()
@@ -401,30 +406,38 @@ void Player::DrawPlayerExp()
 	DrawFormatStringFToHandle(0, SCREEN_BOTTOM - 32, COLOR_AQUA, this->font, "EXP : %d", this->Exp);
 }
 
-void Player::GettingItem(const Item & item)
+int Player::GetItemNum(int itemType)
 {
-	this->inventory.push_back(item);
+	return this->Inventory[itemType];
 }
-
-int Player::GetInventoryInItemNum()
+void Player::AddItem(int itemType)
 {
-	return this->inventory.size();
+	this->Inventory[itemType] += 1;
 }
-
+void Player::UseItem(int itemType)
+{
+	this->Inventory[itemType] -= 1;
+}
 void Player::DrawInventoryList()
 {
-	for (int i = 0; i < this->inventory.size(); i++)
+	double scale = 2.0;
+	for (int i = 0; i < ItemTypeNum; i++)
 	{
-		if (i < 16)
-		{
+		int x1 = (SCREEN_RIGHT - (ItemTextureSize * scale - ItemTextureSize * scale * i));
+		int y1 = (SCREEN_BOTTOM - (ItemTextureSize * scale)) - SCREEN_CENTER_Y / 4;
+		int x2 = x1 + ItemTextureSize * scale;
+		int y2 = y1 + ItemTextureSize * scale;
 
-			this->inventory[i].DrawItem(60 - (32 / 2) * 0.75, 32 * i + 60 + (32 / 2) * 0.75);
-			DrawFormatStringFToHandle(60, 32 * i + 60, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
-		}
-		else
-		{
-			this->inventory[i].DrawItem(60 - (32 / 2) * 0.75, 32 * (i - 16) + 60 + (32 / 2) * 0.75);
-			DrawFormatStringFToHandle(SCREEN_CENTER_X + 60, 32 * (i - 16) + 65, COLOR_WHITE, this->menu_font, "%s", this->inventory[i].GetItemName());
-		}
+		int x = x1 + (ItemTextureSize * scale) / 2;
+		int y = y1 + (ItemTextureSize * scale) / 2;
+
+		DrawRotaGraph(x, y, scale, 0.0, ItemTextures::singleton().GetTexture(i), true);
+		DrawBox(x1 + 1, y1 + 1, x2 + 1, y2 + 1, COLOR_BLACK, false);
+		DrawBox(x1, y1, x2, y2, COLOR_LIME, false);
+
+		DrawFormatStringToHandle(x2 - 20 + 3, y2 - 20 + 3, COLOR_BLACK, this->menu_font, "%d", this->Inventory[i]);
+		DrawFormatStringToHandle(x2 - 20, y2 - 20, COLOR_WHITE, this->menu_font, "%d", this->Inventory[i]);
 	}
 }
+
+

@@ -314,41 +314,21 @@ void ScenePlay::GameAction()
 	MessageWindow& msg = MessageWindow::singleton();
 	this->GotoNextFloor(p_pos);
 	this->MagicCircleAction(p_pos);
-
-	static bool f = false;
-	static bool f_old = false;
-
-	if (this->player->GetInventoryInItemNum() < Player::MAX_ITEM_INVENTORY)
-	{
-		f = false;
-	}
 	
 	for (int i = 0; i < this->item.size(); i++)
 	{
-		if (!f)
+		
 		{
 			if (static_cast<int>(p_pos.x) == this->item[i].GetPosition().x &&
 				static_cast<int>(p_pos.y) == this->item[i].GetPosition().y)
 			{
-				if (this->player->GetInventoryInItemNum() == Player::MAX_ITEM_INVENTORY)
-				{
-					f = true;
-					if (f && !f_old)
-					{
-						msg.SetMessage(COLOR_RED, "ƒCƒ“ƒxƒ“ƒgƒŠ‚ª‚¢‚Á‚Ï‚¢‚Å‚·I");
-					}
-				}
-				else
-				{
-					msg.SetMessage(COLOR_AQUA, "%s ‚ðE‚Á‚½", this->item[i].GetItemName());
-					this->player->GettingItem(this->item[i]);
-					this->item.erase(this->item.begin() + i);
-				}
+				this->player->AddItem(this->item[i].GetItemType());
+				msg.SetMessage(COLOR_WHITE, "%s ‚Í %s ‚ðE‚Á‚½", this->player->GetName(), this->item[i].GetItemName());
+				this->item.erase(this->item.begin() + i);
 				break;
 			}
 		}
 	}
-	f_old = f;
 }
 
 void ScenePlay::WaitTurnSequence()
@@ -593,6 +573,7 @@ void ScenePlay::Render(void)
 	}
 	this->RenderOtherUI();
 
+	this->player->DrawInventoryList();
 	if (this->menu_flag)
 	{
 		int x1 = 0;
@@ -603,6 +584,5 @@ void ScenePlay::Render(void)
 		DrawBox(x1, y1, x2, y2, COLOR_BLACK, true);
 		DrawBox(x1, y1, x2, y2, COLOR_LIME, false);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-		this->player->DrawInventoryList();
 	}
 }

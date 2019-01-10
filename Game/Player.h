@@ -33,7 +33,7 @@ private:
 	int Exp;	// —ÝŒvŠl“¾ŒoŒ±’l
 	int next_exp;
 
-	std::vector<Item> inventory;
+	int Inventory[ItemTypeNum];
 
 public:
 	Player();
@@ -60,7 +60,8 @@ public:
 
 	void Healing();							// ‰ñ•œ(‰½•à‚©•à‚­‚Æ‚P‰ñ•œ‚·‚é‚â‚Â)
 
-	void GettingItem(const Item& item);
-	int GetInventoryInItemNum();
+	int GetItemNum(int itemType);
+	void AddItem(int itemType);
+	void UseItem(int itemType);
 	void DrawInventoryList();
 };

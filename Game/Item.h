@@ -2,6 +2,7 @@
 
 #include "Define.h"
 #include "Vector.h"
+#include "Singleton.h"
 
 typedef enum
 {
@@ -9,6 +10,36 @@ typedef enum
 	ItemTypeNum,
 	ItemTypeNull
 }ItemType;
+
+const int ItemTextureSize = 32;
+
+class ItemTextures : public Singleton<ItemTextures>
+{
+private:
+	int gh[ItemTypeNum];
+	friend class Singleton<ItemTextures>;
+
+public:
+	static const int TextureNotFound = (-1);
+
+public:
+	ItemTextures()
+	{
+		this->gh[RecoveryPortion] = LoadGraph("Resources/Textures/Portion.png");
+	}
+
+	int GetTexture(int itemType)
+	{
+		if (itemType < ItemTypeNum)
+		{
+			return this->gh[itemType];
+		}
+		else
+		{
+			return (TextureNotFound);
+		}
+	}
+};
 
 class Item
 {
@@ -33,4 +64,3 @@ public:
 public:
 	void CreateRecoveryPortion();
 };
-
