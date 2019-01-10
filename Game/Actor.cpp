@@ -59,6 +59,11 @@ void Actor::SetTurnEndFlag()
 	this->end_flag = false;
 }
 
+int Actor::GetATK()
+{
+	return this->ATK;
+}
+
 int Actor::GetDEF()
 {
 	return this->DEF;

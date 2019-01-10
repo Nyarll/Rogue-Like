@@ -27,6 +27,7 @@ private:
 
 	int exp;
 
+	bool atk_flag = false;
 protected:
 	int type;
 
@@ -49,6 +50,9 @@ public:
 	void Damage(int damage)override;			// ó‚¯‚éƒ_ƒ[ƒW
 
 	void UpdateStatus(int player_level, int now_floor);
+
+	bool GetAttackFlag();
+	void SetAttackFlag(bool f);
 
 public:
 	void CreateSlime()

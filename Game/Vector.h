@@ -78,8 +78,7 @@ public:
 	bool operator!=(const Vector2& p) { return ((static_cast<int>(this->x) != static_cast<int>(p.x)) && (static_cast<int>(this->y) != static_cast<int>(p.y))); };
 
 public:
-
-	void Set(float x_, float y_);
+	void Set(float x, float y);
 
 	Vector2 Add(Vector2* vec);	// 2Dベクトルの加算
 	Vector2 Sub(Vector2* vec);	// 2Dベクトルの減算

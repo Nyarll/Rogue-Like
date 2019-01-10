@@ -386,11 +386,11 @@ void ScenePlay::EnemyTurnSequence()
 				this->enemy[i].Damage(this->player->AttackDamage(this->enemy[i].GetDEF()));
 				if (!enemy[i].GetAlive())
 				{
-					msg.SetMessage(COLOR_AQUA, "%s ‚Í “|‚³‚ê‚½", enemy[i].GetName());
+					msg.SetMessage(COLOR_WHITE, "%s ‚Í “|‚³‚ê‚½", enemy[i].GetName());
 					msg.SetMessage(COLOR_AQUA, "%s ‚Í %d ‚ÌŒoŒ±’l‚ðŠl“¾", this->player->GetName(), this->enemy[i].GetExp());
 					this->player->AddExp(this->enemy[i].GetExp());
 
-					//if (!(rand() % 5))
+					if (!(rand() % 3))
 					{
 						IntVector2 drop_point = { static_cast<int>(enemy[i].GetPosition().x), static_cast<int>(enemy[i].GetPosition().y) };
 						for (int i = 0; i < this->item.size(); i++)
@@ -422,12 +422,61 @@ void ScenePlay::EnemyTurnSequence()
 	for (int i = 0; i < this->enemy.size(); i++)
 	{
 		this->enemy[i].SetTargetPosition(this->player->GetPosition());
+		this->enemy[i].SetAttackFlag(false);
 	}
+
 	for (int i = 0; i < this->enemy.size(); i++)
 	{
-		this->enemy[i].Update(this->enemy, i);
+		Vector2 epos = { this->enemy[i].GetPosition().x,this->enemy[i].GetPosition().y };
+		Vector2 atk = epos;
+		int ex = static_cast<int>(epos.x);
+		int ey = static_cast<int>(epos.y);
+		int px = static_cast<int>(this->player->GetPosition().x);
+		int py = static_cast<int>(this->player->GetPosition().y);
+
+		int damage = this->enemy[i].GetATK() - this->player->GetDEF();
+
+		if (ey == py)
+		{
+			if ((ex - 1 == px))	// enemy ‚Ì¶
+			{
+				atk = this->enemy[i].Attack();
+				this->enemy[i].SetAttackFlag(true);
+				this->player->Damage(damage);
+			}
+			if ((ex + 1 == px))	// ‰E
+			{
+				atk = this->enemy[i].Attack();
+				this->enemy[i].SetAttackFlag(true);
+				this->player->Damage(damage);
+			}
+		}
+		if (ex == px)
+		{
+			if ((ey - 1 == py))	// enemy ‚Ìã
+			{
+				atk = this->enemy[i].Attack();
+				this->enemy[i].SetAttackFlag(true);
+				this->player->Damage(damage);
+			}
+			if ((ey + 1 == py))	// ‰º
+			{
+				atk = this->enemy[i].Attack();
+				this->enemy[i].SetAttackFlag(true);
+				this->player->Damage(damage);
+			}
+		}
+	}
+
+	for (int i = 0; i < this->enemy.size(); i++)
+	{
+		if (!this->enemy[i].GetAttackFlag())
+		{
+			this->enemy[i].Update(this->enemy, i);
+		}
 	}
 	this->act = TurnEnd;
+	return;
 }
 void ScenePlay::TurnEndSequence()
 {

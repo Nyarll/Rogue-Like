@@ -369,8 +369,16 @@ Vector2 Player::Attack()
 void Player::Damage(int damage)
 {
 	MessageWindow& msg = MessageWindow::singleton();
-	msg.SetMessage(COLOR_RED, " %s に %3d のダメージ", this->name, damage);
-	this->now_hp -= damage;
+	int d = damage;
+
+	if (d < 0)
+	{
+		d = 0;
+	}
+
+	msg.SetMessage(COLOR_RED, " %s に %3d のダメージ", this->name, d);
+
+	this->now_hp -= d;
 
 	if (this->now_hp <= 0)
 	{

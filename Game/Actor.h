@@ -65,6 +65,7 @@ public:
 	bool CheckTurnEnd();
 	void SetTurnEndFlag();
 
+	int GetATK();
 	int GetDEF();
 
 	virtual void Render(const Vector2& screen_position, const int grid_size) = 0;

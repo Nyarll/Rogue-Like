@@ -386,7 +386,12 @@ void Enemy::Damage(int damage)
 
 Vector2 Enemy::Attack()
 {
-	return Vector2();
+	Vector2 attack;
+	attack.x = this->position.x + this->move_direction * 1;
+	attack.y = this->position.y + this->move_direction * 1;
+	MessageWindow& msg = MessageWindow::singleton();
+	msg.SetMessage(0xffff4040, "%s ‚ÌUŒ‚I", this->name);
+	return attack;
 }
 
 int Enemy::GetExp()
@@ -401,4 +406,14 @@ void Enemy::UpdateStatus(int player_level, int now_floor)
 	this->ATK = this->Dice(2 + (player_level), 6) + (player_level) + this->Dice(now_floor, 3);
 	this->DEF = (player_level) + this->Dice(now_floor, 3);
 	this->exp = this->max_hp / 2 + Dice(player_level, 6);
+}
+
+bool Enemy::GetAttackFlag()
+{
+	return this->atk_flag;
+}
+
+void Enemy::SetAttackFlag(bool f)
+{
+	this->atk_flag = f;
 }

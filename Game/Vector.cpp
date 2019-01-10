@@ -2,11 +2,10 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-
-void Vector2::Set(float x_, float y_)
+void Vector2::Set(float x, float y)
 {
-	this->x = x_;
-	this->y = y_;
+	this->x = x;
+	this->y = y;
 }
 
 Vector2 Vector2::Add(Vector2* vec2)
