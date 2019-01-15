@@ -32,6 +32,7 @@ void SceneTitle::Update()
 
 void SceneTitle::Render()
 {
+	SetDrawBright(255, 255, 255);
 	DrawGraph(0, 0, this->title_gh, true);
 
 	if (cnt % 60 > 10)

@@ -89,6 +89,7 @@
   <!-- ソースファイル -->
   <ItemGroup>
     <ClCompile Include="Game\Actor.cpp" />
+    <ClCompile Include="Game\DemoScene.cpp" />
     <ClCompile Include="Game\Dungeons.cpp" />
     <ClCompile Include="Game\Enemy.cpp" />
     <ClCompile Include="Game\Input.cpp" />
@@ -117,6 +118,7 @@
   <ItemGroup>
     <ClInclude Include="Game\Actor.h" />
     <ClInclude Include="Game\Define.h" />
+    <ClInclude Include="Game\DemoScene.h" />
     <ClInclude Include="Game\Dungeons.h" />
     <ClInclude Include="Game\Enemy.h" />
     <ClInclude Include="Game\GenerateMap.h" />
