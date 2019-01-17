@@ -59,6 +59,16 @@ void Actor::SetTurnEndFlag()
 	this->end_flag = false;
 }
 
+int Actor::GetMaxHP()
+{
+	return this->max_hp;
+}
+
+int Actor::GetNowHP()
+{
+	return this->now_hp;
+}
+
 int Actor::GetATK()
 {
 	return this->ATK;

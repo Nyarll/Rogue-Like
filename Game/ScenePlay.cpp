@@ -616,6 +616,18 @@ void ScenePlay::RenderOtherUI()
 		COLOR_YELLOW, this->ui_font, "Map : M key");
 }
 
+void ScenePlay::RenderPlayerStatus()
+{
+	DrawFormatStringToHandle(40, 40, COLOR_WHITE, this->msg_font, "Level : %d", this->player->GetLevel());
+	DrawFormatStringToHandle(40, 75, COLOR_WHITE, this->msg_font, "Name : %s", this->player->GetName());
+	
+	DrawFormatStringToHandle(40, 140, COLOR_WHITE, this->msg_font, "HP : %d / %d", this->player->GetNowHP(), this->player->GetMaxHP());
+	
+	DrawFormatStringToHandle(40, 175, COLOR_WHITE, this->msg_font, "ATK : %d", this->player->GetATK());
+	DrawFormatStringToHandle(40, 220, COLOR_WHITE, this->msg_font, "DEF : %d", this->player->GetDEF());
+
+}
+
 void ScenePlay::Render(void)
 {
 	Vector2 screen_pos = this->GetScreenPosition();
@@ -659,5 +671,7 @@ void ScenePlay::Render(void)
 		DrawBox(x1, y1, x2, y2, COLOR_BLACK, true);
 		DrawBox(x1, y1, x2, y2, COLOR_LIME, false);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		this->RenderPlayerStatus();
 	}
 }

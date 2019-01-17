@@ -89,6 +89,7 @@ private:
 	void RenderNowFloor();
 	void RenderMap();
 	void RenderOtherUI();
+	void RenderPlayerStatus();
 
 public:
 	// ‘€ì

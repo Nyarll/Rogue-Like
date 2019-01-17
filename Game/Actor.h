@@ -65,6 +65,8 @@ public:
 	bool CheckTurnEnd();
 	void SetTurnEndFlag();
 
+	int GetMaxHP();
+	int GetNowHP();
 	int GetATK();
 	int GetDEF();
 

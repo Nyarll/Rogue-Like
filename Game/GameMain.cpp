@@ -36,7 +36,7 @@ Game::Game()
 	scene_manager.AddScene(SCENE_PLAY, ScenePlay::Create);
 	scene_manager.AddScene(SCENE_RESULT, SceneResult::Create);
 
-	scene_manager.SetStartScene(SCENE_DEMO);
+	scene_manager.SetStartScene(SCENE_PLAY);
 }
 
 
@@ -74,10 +74,8 @@ void Game::Initialize(void)
 //----------------------------------------------------------------------
 void Game::Update(void)
 {
-	InputManager& input = InputManager::singleton();
-	input.Update();
-	SceneManager& scene_manager = SceneManager::singleton();
-	scene_manager.UpdateActiveScene();
+	InputManager::singleton().Update();
+	SceneManager::singleton().UpdateActiveScene();
 }
 
 
@@ -91,8 +89,7 @@ void Game::Update(void)
 //----------------------------------------------------------------------
 void Game::Render(void)
 {
-	SceneManager& scene_manager = SceneManager::singleton();
-	scene_manager.RenderActiveScene();
+	SceneManager::singleton().RenderActiveScene();
 }
 
 
