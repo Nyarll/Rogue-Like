@@ -1,7 +1,6 @@
 #pragma once
 
 #define _USE_MATH_DEFINES
-//#include <math.h>
 
 #include <vector>
 #include <iostream>
@@ -12,6 +11,8 @@
 #include <utility>
 #include <ctime>
 #include <queue>
+
+#include "Astar.hpp"
 
 template<class T> T Min(const T& a, const T& b)
 {

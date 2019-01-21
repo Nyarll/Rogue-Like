@@ -2,6 +2,7 @@
 #include "Map.h"
 
 #include "MessageWindow.h"
+#include "Astar.hpp"
 
 Enemy::Enemy(int player_level, int now_floor)
 {
@@ -37,22 +38,67 @@ int Enemy::GetMovingDirection()
 	if ((ex - search_area <= tx) && (ex + search_area >= tx) &&
 		(ey - search_area <= ty) && (ey + search_area >= ty))
 	{
-		int dx, dy;
-		dx = this->target_pos.x - this->position.x;
-		dy = this->target_pos.y - this->position.y;
+		AStar::Generator generator;
+		generator.setWorldSize({ MapSizeX, MapSizeY });
+		generator.setHeuristic(AStar::Heuristic::euclidean);
+		generator.setDiagonalMovement(false);	// 今回は斜め移動しないので false
 
-		if (abs(dx) > abs(dy))
+		// 壁を Astar アルゴリズムへ登録する
+		for (int y = 0; y < MapSizeY; y++)
 		{
-			// X方向への距離の方が遠いのでそっちに進む
-			if (dx < 0) { return Left; } // 左
-			else { return Right; } // 右
+			for (int x = 0; x < MapSizeX; x++)
+			{
+				if (this->map->GetCellid(x, y))
+				{
+					generator.addCollision({ x,y });
+				}
+			}
 		}
-		else
+
+		std::vector<Vector2> data;	// ルート情報
 		{
-			// Y方向へ進む
-			if (dy < 0) { return Up; } // 上
-			else { return Down; } // 下
+			auto path = generator.findPath({ static_cast<int>(this->position.x), static_cast<int>(this->position.y) },
+			{ static_cast<int>(this->target_pos.x), static_cast<int>(this->target_pos.y) });
+
+			for (auto& coordinate : path)
+			{
+				Vector2 back;
+				back.Set(coordinate.x, coordinate.y);
+				data.push_back(back);
+			}
 		}
+		// 移動方向の決定
+		for (int i = 0; i < data.size(); i++)
+		{
+			// 終端
+			if (static_cast<int>(data[i].x) == static_cast<int>(this->position.x) &&
+				static_cast<int>(data[i].y) == static_cast<int>(this->position.y))
+			{
+				break;
+			}
+
+			if (static_cast<int>(data[i].x) == (static_cast<int>(this->position.x) - 1) &&
+				static_cast<int>(data[i].y) == static_cast<int>(this->position.y))
+			{
+				return Left;
+			}
+			if (static_cast<int>(data[i].x) == (static_cast<int>(this->position.x) + 1) &&
+				static_cast<int>(data[i].y) == static_cast<int>(this->position.y))
+			{
+				return Right;
+			}
+			if ((static_cast<int>(data[i].x)) == static_cast<int>(this->position.x) &&
+				static_cast<int>(data[i].y) == (static_cast<int>(this->position.y) - 1))
+			{
+				return Up;
+			}
+			if ((static_cast<int>(data[i].x)) == static_cast<int>(this->position.x) &&
+				static_cast<int>(data[i].y) == (static_cast<int>(this->position.y) + 1))
+			{
+				return Down;
+			}
+		}
+
 	}
 	else
 	{
@@ -403,8 +449,8 @@ void Enemy::UpdateStatus(int player_level, int now_floor)
 {
 	this->max_hp = this->Dice(3 + (player_level), 6) + this->Dice(1 + now_floor, 4) + (player_level);
 	this->now_hp = this->max_hp;
-	this->ATK = this->Dice(2 + (player_level), 6) + (player_level) + this->Dice(now_floor, 3);
-	this->DEF = (player_level) + this->Dice(now_floor, 3);
+	this->ATK = this->Dice(2 + (player_level), 6) + (player_level)+this->Dice(now_floor, 3);
+	this->DEF = (player_level)+this->Dice(now_floor, 3);
 	this->exp = this->max_hp / 2 + Dice(player_level, 6);
 }
 
