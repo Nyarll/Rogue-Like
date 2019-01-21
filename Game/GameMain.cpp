@@ -36,7 +36,7 @@ Game::Game()
 	scene_manager.AddScene(SCENE_PLAY, ScenePlay::Create);
 	scene_manager.AddScene(SCENE_RESULT, SceneResult::Create);
 
-	scene_manager.SetStartScene(SCENE_PLAY);
+	scene_manager.SetStartScene(SCENE_DEMO);
 }
 
 

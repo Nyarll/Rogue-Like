@@ -72,3 +72,8 @@ void MessageWindow::Render()
 	}
 
 }
+
+void MessageWindow::DeleteAll()
+{
+	this->message.clear();
+}

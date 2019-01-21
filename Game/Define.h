@@ -36,7 +36,7 @@ public:
 };
 
 // <システム> ----------------------------------------------------------
-const char* const GAME_TITLE = "Block Breaking";    // ゲームタイトル
+const char* const GAME_TITLE = "Infinity Dungeon";    // ゲームタイトル
 
 #define extends : public
 

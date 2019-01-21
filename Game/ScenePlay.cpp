@@ -546,6 +546,7 @@ void ScenePlay::Update(void)
 		// this->action_flag = false;
 		SceneManager& manager = SceneManager::singleton();
 		manager.RequestScene(SCENE_RESULT);
+		me.DeleteAll();
 	}
 
 	input.key->UpdateOld();

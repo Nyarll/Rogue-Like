@@ -68,5 +68,6 @@ public:
 
 	void SetMessage(int msgColor, std::string fmt_str, ...);
 	void Render();
-};
 
+	void DeleteAll();
+};
