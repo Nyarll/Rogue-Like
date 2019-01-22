@@ -536,10 +536,6 @@ void ScenePlay::Update(void)
 	{
 		this->GameTurnSequence();
 	}
-	else
-	{
-
-	}
 
 	if (this->player->GetAlive() == false)
 	{

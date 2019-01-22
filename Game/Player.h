@@ -7,7 +7,7 @@
 
 class Map;
 
-class Player extends Actor
+class Player : public Actor
 {
 public:
 	static const int MOVING_INTERVAL;

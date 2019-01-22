@@ -49,7 +49,7 @@ public:
 	void SetColor(const int& color) { this->color = color; };
 };
 
-class MessageWindow extends Singleton<MessageWindow>
+class MessageWindow : public Singleton<MessageWindow>
 {
 private:
 	static const int RenderMax = 20 * 8;

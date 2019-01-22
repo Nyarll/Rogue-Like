@@ -38,7 +38,7 @@ class Scene;
 // クラスの定義 ============================================================
 
 // <シーン管理> ------------------------------------------------------
-class SceneManager extends Singleton<SceneManager>
+class SceneManager : public Singleton<SceneManager>
 {
 	// エイリアス宣言
 	using FactoryMethod = Scene*(*)();

@@ -36,6 +36,9 @@
     <Filter Include="ライブラリ\ユーティリティ">
       <UniqueIdentifier>{daae40c7-ff74-47e6-98c1-472de706acab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ゲーム\Lib">
+      <UniqueIdentifier>{d7e00e8b-4d37-4d4c-9708-55954098abbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <!-- ソースファイル -->
   <ItemGroup>
@@ -67,13 +70,7 @@
     <ClCompile Include="Game\GameMain.cpp">
       <Filter>ゲーム</Filter>
     </ClCompile>
-    <ClCompile Include="Game\Input.cpp">
-      <Filter>ゲーム</Filter>
-    </ClCompile>
     <ClCompile Include="Game\SceneManager.cpp">
-      <Filter>ゲーム</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Vector.cpp">
       <Filter>ゲーム</Filter>
     </ClCompile>
     <ClCompile Include="Game\MapChip.cpp">
@@ -89,9 +86,6 @@
       <Filter>ゲーム</Filter>
     </ClCompile>
     <ClCompile Include="Game\ScenePlay.cpp">
-      <Filter>ゲーム</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\MessageWindow.cpp">
       <Filter>ゲーム</Filter>
     </ClCompile>
     <ClCompile Include="Game\Enemy.cpp">
@@ -113,6 +107,15 @@
       <Filter>ゲーム</Filter>
     </ClCompile>
     <ClCompile Include="Game\Astar.cpp">
+      <Filter>ゲーム\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Vector.cpp">
+      <Filter>ゲーム\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Input.cpp">
+      <Filter>ゲーム\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\MessageWindow.cpp">
       <Filter>ゲーム</Filter>
     </ClCompile>
   </ItemGroup>
@@ -151,22 +154,10 @@
     <ClInclude Include="Game\GameMain.h">
       <Filter>ゲーム</Filter>
     </ClInclude>
-    <ClInclude Include="Game\Define.h">
-      <Filter>ゲーム</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Input.h">
-      <Filter>ゲーム</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Scene.h">
       <Filter>ゲーム</Filter>
     </ClInclude>
     <ClInclude Include="Game\SceneManager.h">
-      <Filter>ゲーム</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Singleton.h">
-      <Filter>ゲーム</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Vector.h">
       <Filter>ゲーム</Filter>
     </ClInclude>
     <ClInclude Include="Game\MapChip.h">
@@ -209,7 +200,19 @@
       <Filter>ゲーム</Filter>
     </ClInclude>
     <ClInclude Include="Game\Astar.hpp">
-      <Filter>ゲーム</Filter>
+      <Filter>ゲーム\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Define.h">
+      <Filter>ゲーム\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Vector.h">
+      <Filter>ゲーム\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Singleton.h">
+      <Filter>ゲーム\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Input.h">
+      <Filter>ゲーム\Lib</Filter>
     </ClInclude>
   </ItemGroup>
   <!-- リソースファイル -->

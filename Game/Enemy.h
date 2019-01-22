@@ -12,7 +12,7 @@ typedef enum
 	EnemyTypeNull
 }EnemyType;
 
-class Enemy extends Actor
+class Enemy : public Actor
 {
 private:
 	static const int MOVING_INTERVAL = 16;
