@@ -20,7 +20,7 @@ ScenePlay::ScenePlay()
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 	SoundManager::singleton().SoundStop(TitleBGM);
 	this->render_map = false;
-	this->render_msg = false;
+	this->render_msg = true;
 	this->dng_floor = 1;
 
 	this->act = Wait;
