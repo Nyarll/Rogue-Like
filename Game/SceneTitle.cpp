@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "SceneTitle.h"
 #include "Input.h"
+#include "SoundManager.h"
 
 Scene* SceneTitle::Create()
 {
@@ -11,6 +12,9 @@ SceneTitle::SceneTitle()
 {
 	this->title_gh = LoadGraph("Resources/Textures/Title.png");
 	this-> font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 32, -1);
+
+	SoundManager::singleton().SoundStop(TitleBGM);
+	SoundManager::singleton().SoundPlay(TitleBGM, DX_PLAYTYPE_LOOP);
 }
 
 
@@ -23,10 +27,10 @@ void SceneTitle::Update()
 	InputManager& input = InputManager::singleton();
 	if (input.key->GetDown(KEY_INPUT_SPACE))
 	{
+		SoundManager::singleton().SoundPlay(Decision, DX_PLAYTYPE_BACK);
 		SceneManager& manager = SceneManager::singleton();
 		manager.RequestScene(SCENE_PLAY);
 	}
-
 	cnt++;
 }
 

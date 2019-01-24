@@ -6,6 +6,8 @@
 #include "MessageWindow.h"
 #include "Input.h"
 
+#include "SoundManager.h"
+
 Scene* ScenePlay::Create()
 {
 	return{ new ScenePlay() };
@@ -15,7 +17,7 @@ Scene* ScenePlay::Create()
 ScenePlay::ScenePlay()
 {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
-
+	SoundManager::singleton().SoundStop(TitleBGM);
 	this->render_map = false;
 	this->render_msg = false;
 	this->dng_floor = 1;
@@ -52,6 +54,9 @@ ScenePlay::ScenePlay()
 	this->act = Wait;
 
 	this->Sequence_count = 0;
+
+	SoundManager& sm = SoundManager::singleton();
+	sm.SoundPlay(GameBGM, DX_PLAYTYPE_LOOP);
 }
 
 ScenePlay::~ScenePlay()
@@ -77,6 +82,8 @@ void ScenePlay::InitDungeons()
 
 	//this->player->ChangeMap(map, this->mob[0].x, this->mob[0].y);
 	//this->map->SetFloorChangePlace(this->mob[RL_MOB_C - 1].x, this->mob[RL_MOB_C - 1].y);
+
+	this->item.clear();
 
 	// プレイヤーを設置
 	Vector2 init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(0).x),
@@ -223,6 +230,7 @@ void ScenePlay::GotoNextFloor(const Vector2 & playerPosition)
 		if (!flag)
 		{
 			msg.SetMessage(COLOR_WHITE, "下の階層へ...");
+			SoundManager::singleton().SoundPlay(FloorChange, DX_PLAYTYPE_BACK);
 			this->dng_floor += 1;
 			flag = true;
 		}
@@ -527,6 +535,7 @@ void ScenePlay::Update(void)
 	InputManager& input = InputManager::singleton();
 	input.Update();
 	MessageWindow& me = MessageWindow::singleton();
+	
 
 	// 機能 / ターンには直接影響を及ぼさないもの
 	this->GameAction();

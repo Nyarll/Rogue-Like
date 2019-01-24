@@ -2,6 +2,7 @@
 #include "Map.h"
 #include "Input.h"
 #include "MessageWindow.h"
+#include "SoundManager.h"
 
 const int Player::MOVING_INTERVAL = 16;
 const int Player::GRAPH_SIZE_X = 32;
@@ -340,8 +341,10 @@ void Player::LevelUp()
 Vector2 Player::Attack()
 {
 	MessageWindow& msg = MessageWindow::singleton();
+	SoundManager& sm = SoundManager::singleton();
 
 	msg.SetMessage(this->msg_color, " %s ‚ÌUŒ‚", this->name);
+	sm.SoundPlay(AttackSE, DX_PLAYTYPE_BACK);
 
 	int atk_x = static_cast<int>(this->position.x), atk_y = static_cast<int>(this->position.y);
 

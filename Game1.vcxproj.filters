@@ -118,6 +118,9 @@
     <ClCompile Include="Game\MessageWindow.cpp">
       <Filter>ゲーム</Filter>
     </ClCompile>
+    <ClCompile Include="Game\SoundManager.cpp">
+      <Filter>ゲーム</Filter>
+    </ClCompile>
   </ItemGroup>
   <!-- ヘッダファイル -->
   <ItemGroup>
@@ -213,6 +216,9 @@
     </ClInclude>
     <ClInclude Include="Game\Input.h">
       <Filter>ゲーム\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\SoundManager.h">
+      <Filter>ゲーム</Filter>
     </ClInclude>
   </ItemGroup>
   <!-- リソースファイル -->

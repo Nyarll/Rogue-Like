@@ -1,6 +1,7 @@
 #include "DemoScene.h"
 
 #include "SceneManager.h"
+#include "SoundManager.h"
 
 Scene * DemoScene::Create()
 {
@@ -10,6 +11,7 @@ Scene * DemoScene::Create()
 DemoScene::DemoScene()
 {
 	this->gh = LoadGraph("Resources/Textures/MyIcon.png");
+	
 	this->rotate = 0;
 }
 
@@ -27,6 +29,11 @@ void DemoScene::Update()
 	else if (this->rotate >= 180)
 	{
 		this->bright -= (255.0f / 180.0f);
+	}
+
+	if (static_cast<int>(this->rotate) == 2)
+	{
+		SoundManager::singleton().SoundPlay(Demo, DX_PLAYTYPE_BACK);
 	}
 
 	this->rotate += 2.0f;

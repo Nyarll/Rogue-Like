@@ -2,6 +2,7 @@
 #include "Map.h"
 
 #include "MessageWindow.h"
+#include "SoundManager.h"
 #include "Astar.hpp"
 
 Enemy::Enemy(int player_level, int now_floor)
@@ -437,6 +438,9 @@ Vector2 Enemy::Attack()
 	attack.y = this->position.y + this->move_direction * 1;
 	MessageWindow& msg = MessageWindow::singleton();
 	msg.SetMessage(0xffff4040, "%s ‚ÌUŒ‚I", this->name);
+	SoundManager& sm = SoundManager::singleton();
+	sm.SoundPlay(AttackSE, DX_PLAYTYPE_BACK);
+	
 	return attack;
 }
 

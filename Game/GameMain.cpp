@@ -12,6 +12,7 @@
 #include "GameMain.h"
 
 #include "SceneManager.h"
+#include "SoundManager.h"
 
 #include "DemoScene.h"
 #include "SceneTitle.h"
@@ -30,6 +31,7 @@
 Game::Game()
 {
 	SceneManager& scene_manager = SceneManager::singleton();
+	SoundManager& sound_manager = SoundManager::singleton();
 
 	scene_manager.AddScene(SCENE_DEMO, DemoScene::Create);
 	scene_manager.AddScene(SCENE_TITLE, SceneTitle::Create);
@@ -37,6 +39,13 @@ Game::Game()
 	scene_manager.AddScene(SCENE_RESULT, SceneResult::Create);
 
 	scene_manager.SetStartScene(SCENE_DEMO);
+
+	sound_manager.SoundRegister(GameBGM, "Resources/Sound/bgm/Dungeon.mp3");
+	sound_manager.SoundRegister(AttackSE, "Resources/Sound/se/Attack.wav");
+	sound_manager.SoundRegister(FloorChange, "Resources/Sound/se/FloorChange.wav");
+	sound_manager.SoundRegister(TitleBGM, "Resources/Sound/bgm/TitleBGM.mp3");
+	sound_manager.SoundRegister(Demo, "Resources/Sound/se/LogoSound.wav");
+	sound_manager.SoundRegister(Decision, "Resources/Sound/se/Decision.wav");
 }
 
 
