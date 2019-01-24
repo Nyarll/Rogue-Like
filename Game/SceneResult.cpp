@@ -3,6 +3,8 @@
 #include "Input.h"
 #include "SoundManager.h"
 
+#include "Score.h"
+
 
 Scene* SceneResult::Create()
 {
@@ -39,6 +41,16 @@ void SceneResult::Update()
 void SceneResult::Render()
 {
 	DrawGraph(0, 0, this->gh, true);
+
+	DrawFormatStringToHandle(SCREEN_CENTER_X - (7 * sizeof("Floor : ")) + 4, SCREEN_CENTER_Y + 4,
+		COLOR_BLACK, this->font, "Floor : %d", Score::singleton().GetScoreFloor());
+	DrawFormatStringToHandle(SCREEN_CENTER_X - (7 * sizeof("Floor :")), SCREEN_CENTER_Y,
+		COLOR_WHITE, this->font, "Floor : %d", Score::singleton().GetScoreFloor());
+
+	DrawFormatStringToHandle(SCREEN_CENTER_X - (7 * sizeof("Level : ")) + 4, SCREEN_CENTER_Y + 40 + 4,
+		COLOR_BLACK, this->font, "Level : %d", Score::singleton().GetScoreLevel());
+	DrawFormatStringToHandle(SCREEN_CENTER_X - (7 * sizeof("Level :")), SCREEN_CENTER_Y + 40,
+		COLOR_WHITE, this->font, "Level : %d", Score::singleton().GetScoreLevel());
 
 	if (cnt % 60 > 10)
 	{

@@ -410,6 +410,11 @@ void Player::AddExp(int exp)
 	this->Exp += exp;
 }
 
+int Player::GetNextExp()
+{
+	return this->next_exp;
+}
+
 void Player::DrawPlayerExp()
 {
 	SetDrawBright(255, 255, 255);

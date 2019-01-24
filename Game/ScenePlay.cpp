@@ -7,6 +7,7 @@
 #include "Input.h"
 
 #include "SoundManager.h"
+#include "Score.h"
 
 Scene* ScenePlay::Create()
 {
@@ -41,15 +42,33 @@ ScenePlay::ScenePlay()
 	}
 
 	this->player = new Player;
+	this->player->SetName("Player");
 
+	Score& sc = Score::singleton();
+	if (sc.GetLoadFlag())
+	{
+		int level, mh, nh, patk, pdef, exp, nexp;
+		int inv[ItemTypeNum];
+		if (sc.Load(this->dng_floor, level, mh, nh, patk, pdef, exp, nexp, inv))
+		{
+			this->player->SetLevel(level);
+			this->player->SetHP(mh, nh);
+			this->player->SetStatus(patk, pdef);
+			this->player->SetExp(exp);
+			this->player->SetNextExp(nexp);
+			for (int i = 0; i < ItemTypeNum; i++)
+			{
+				this->player->SetInventory(i, inv[i]);
+			}
+		}
+	}
+	
 	this->InitDungeons();
 
 	this->msg_font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 32, -1);
 	this->ui_font = CreateFontToHandle("Cooper Black", 20, -1);
 
 	this->change_cnt = 0;
-
-	this->player->SetName("Player");
 
 	this->act = Wait;
 
@@ -316,6 +335,10 @@ void ScenePlay::GameFunction()
 			this->menu_flag = false;
 		}
 	}
+	if (input.key->GetDown(KEY_INPUT_O))
+	{
+		Score::singleton().Save(this->player, this->dng_floor);
+	}
 }
 void ScenePlay::GameAction()
 {
@@ -535,7 +558,7 @@ void ScenePlay::Update(void)
 	InputManager& input = InputManager::singleton();
 	input.Update();
 	MessageWindow& me = MessageWindow::singleton();
-	
+
 
 	// ‹@”\ / ƒ^[ƒ“‚É‚Í’¼Ú‰e‹¿‚ð‹y‚Ú‚³‚È‚¢‚à‚Ì
 	this->GameAction();
@@ -552,6 +575,8 @@ void ScenePlay::Update(void)
 		SceneManager& manager = SceneManager::singleton();
 		manager.RequestScene(SCENE_RESULT);
 		me.DeleteAll();
+		Score& score = Score::singleton();
+		score.SetScore(this->dng_floor, this->player->GetLevel());
 	}
 
 	input.key->UpdateOld();
@@ -586,8 +611,8 @@ Vector2 ScenePlay::GetScreenPosition()
 }
 void ScenePlay::RenderNowFloor()
 {
-	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20 + 3, 3, COLOR_BLACK, this->msg_font, "%3d F", this->dng_floor);
-	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 20, 0, COLOR_AQUA, this->msg_font, "%3d F", this->dng_floor);
+	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 40 + 3, 3, COLOR_BLACK, this->msg_font, "%3d F", this->dng_floor);
+	DrawFormatStringToHandle(SCREEN_RIGHT - 5 * 40, 0, COLOR_AQUA, this->msg_font, "%3d F", this->dng_floor);
 }
 void ScenePlay::RenderMap()
 {
@@ -626,12 +651,14 @@ void ScenePlay::RenderPlayerStatus()
 {
 	DrawFormatStringToHandle(40, 40, COLOR_WHITE, this->msg_font, "Level : %d", this->player->GetLevel());
 	DrawFormatStringToHandle(40, 75, COLOR_WHITE, this->msg_font, "Name : %s", this->player->GetName());
-	
+
 	DrawFormatStringToHandle(40, 140, COLOR_WHITE, this->msg_font, "HP : %d / %d", this->player->GetNowHP(), this->player->GetMaxHP());
-	
+
 	DrawFormatStringToHandle(40, 175, COLOR_WHITE, this->msg_font, "ATK : %d", this->player->GetATK());
 	DrawFormatStringToHandle(40, 220, COLOR_WHITE, this->msg_font, "DEF : %d", this->player->GetDEF());
 
+	DrawFormatStringToHandle(40, 400, COLOR_WHITE, this->msg_font, "EXP : %d", this->player->GetExp());
+	DrawFormatStringToHandle(40, 435, COLOR_WHITE, this->msg_font, "NEXT : %d", this->player->GetNextExp());
 }
 
 void ScenePlay::Render(void)

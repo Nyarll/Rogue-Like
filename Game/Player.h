@@ -41,7 +41,9 @@ public:
 
 	void SetFont(int font);
 
+	void SetLevel(int lv) { this->level = lv; }
 	int GetLevel();
+	void SetHP(int max, int now) { this->max_hp = max; this->now_hp = now; }
 
 	bool Update(std::vector<Enemy> enemy);
 
@@ -52,7 +54,16 @@ public:
 	int GetMoveCount()const;
 
 	int GetExp();
+	void SetExp(int exp) { this->Exp = exp; }
 	void AddExp(int exp);
+	int GetNextExp();
+	void SetNextExp(int next_exp) { this->next_exp = this->Exp; }
+
+	void SetStatus(int atk, int def) { this->ATK = atk; this->DEF = def; }
+	void SetInventory(int item_id, int num)
+	{
+		this->Inventory[item_id] = num;
+	}
 
 	void LevelUp();								// レベルアップ
 	Vector2 Attack()override;
