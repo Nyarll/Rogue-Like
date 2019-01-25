@@ -8,6 +8,8 @@ class Map;
 typedef enum
 {
 	Slime,
+	OrangeSlime,
+	GreenSlime,
 	EnemyTypeNum,
 	EnemyTypeNull
 }EnemyType;
@@ -60,5 +62,19 @@ public:
 		this->gh = LoadGraph("Resources/Textures/Slime.png");
 		this->name = "Slime";
 		this->type = Slime;
+	}
+
+	void CreateOrangeSlime()
+	{
+		this->gh = LoadGraph("Resources/Textures/OrangeSlime.png");
+		this->name = "OrangeSlime";
+		this->type = OrangeSlime;
+	}
+
+	void CreateGreenSlime()
+	{
+		this->gh = LoadGraph("Resources/Textures/GreenSlime.png");
+		this->name = "GreenSlime";
+		this->type = GreenSlime;
 	}
 };

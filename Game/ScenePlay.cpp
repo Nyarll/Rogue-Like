@@ -62,7 +62,7 @@ ScenePlay::ScenePlay()
 			}
 		}
 	}
-	
+
 	this->InitDungeons();
 
 	this->msg_font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 32, -1);
@@ -162,10 +162,16 @@ void ScenePlay::InitDungeons()
 		switch (type)
 		{
 		case Slime:
-		{
 			enemy.CreateSlime();
-		}
-		break;
+			break;
+
+		case OrangeSlime:
+			enemy.CreateOrangeSlime();
+			break;
+
+		case GreenSlime:
+			enemy.CreateGreenSlime();
+			break;
 		}
 		init_pos = { static_cast<float>(this->map->map_->GetInitMobPosition(i).x) - 1,
 			static_cast<float>(this->map->map_->GetInitMobPosition(i).y) - 1 };
