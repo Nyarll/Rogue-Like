@@ -150,10 +150,7 @@ void ScenePlay::InitDungeons()
 	}
 
 	// エネミーを設置
-	for (int i = 0; i < this->enemy.size(); i++)
-	{
-		this->enemy.erase(this->enemy.begin() + i);
-	}
+	this->enemy.clear();	// 一度全削除する
 	for (int i = NumObject - NumMobs; i < NumObject - 2; i++)
 	{
 		Enemy enemy(this->player->GetLevel(), this->dng_floor);
