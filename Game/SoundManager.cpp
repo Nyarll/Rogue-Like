@@ -27,16 +27,24 @@ bool SoundManager::SoundRegister(int sound_id, char * file_name)
 
 bool SoundManager::SoundPlay(int sound_id, int play_type)
 {
-	if (this->sh[sound_id] != (-1))
+	
+	if (this->play_mode)
 	{
-		PlaySoundMem(this->sh[sound_id], play_type);
-		return true;
+		if (this->sh[sound_id] != (-1))
+		{
+			PlaySoundMem(this->sh[sound_id], play_type);
+			return true;
+		}
 	}
-
 	return false;
 }
 
 void SoundManager::SoundStop(int sound_id)
 {
 	StopSoundMem(this->sh[sound_id]);
+}
+
+void SoundManager::SetSoundPlayMode(bool mode)
+{
+	this->play_mode = mode;
 }

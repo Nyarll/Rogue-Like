@@ -57,7 +57,7 @@ public:
 	void SetExp(int exp) { this->Exp = exp; }
 	void AddExp(int exp);
 	int GetNextExp();
-	void SetNextExp(int next_exp) { this->next_exp = this->Exp; }
+	void SetNextExp(int next_exp) { this->next_exp = next_exp; }
 
 	void SetStatus(int atk, int def) { this->ATK = atk; this->DEF = def; }
 	void SetInventory(int item_id, int num)

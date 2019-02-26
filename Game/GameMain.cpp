@@ -49,6 +49,8 @@ Game::Game()
 	sound_manager.SoundRegister(Demo, "Resources/Sound/se/LogoSound.wav");
 	sound_manager.SoundRegister(Decision, "Resources/Sound/se/Decision.wav");
 
+	sound_manager.SetSoundPlayMode(false);	// 鳴らすかどうか (デバッグ用)
+
 	score.Init();
 }
 

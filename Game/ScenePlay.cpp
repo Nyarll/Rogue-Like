@@ -44,6 +44,8 @@ ScenePlay::ScenePlay()
 	this->player = new Player;
 	this->player->SetName("Player");
 
+	this->InitDungeons();
+
 	Score& sc = Score::singleton();
 	if (sc.GetLoadFlag())
 	{
@@ -62,8 +64,6 @@ ScenePlay::ScenePlay()
 			}
 		}
 	}
-
-	this->InitDungeons();
 
 	this->msg_font = CreateFontToHandle("HGS‘n‰pÌßÚ¾ÞÝ½EB", 32, -1);
 	this->ui_font = CreateFontToHandle("Cooper Black", 20, -1);
@@ -668,7 +668,7 @@ void ScenePlay::Render(void)
 {
 	Vector2 screen_pos = this->GetScreenPosition();
 
-	this->map->Render(screen_pos, Map::GRID_SIZE, false);
+	this->map->Render(screen_pos, Map::GRID_SIZE, true);
 
 	for (int i = 0; i < this->item.size(); i++)
 	{

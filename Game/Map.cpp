@@ -111,6 +111,7 @@ void Map::Render(const Vector2& screen_pos, const int grid_size, bool render_gri
 				int x2 = x1 + GRID_SIZE;
 				int y2 = y1 + GRID_SIZE;
 				DrawBox(x1, y1, x2, y2, COLOR_GRAY, FALSE);
+				//DrawFormatString(x1, y1, COLOR_BLUE, "%d,%d", i, j);
 			}
 		}
 	}
